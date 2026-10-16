@@ -1,0 +1,40 @@
+/* Design tokens from maquette.md § 3 and the Claude Design mockup. */
+:root {
+  --accent: #ff7a1a;
+  --accent-hover: #ff9240;
+  --accent-soft: rgba(255, 122, 26, 0.15);
+  --on-accent: #000000;
+
+  --bg: #121212;
+  --bg-elevated: #1e1e1e;
+  --bg-field: #242424;
+  --bg-sheet: #282828;
+  --bg-chip: #2e2e2e;
+  --bg-avatar: #3a3a3a;
+  --bg-badge: #3e3e3e;
+  --bg-overlay: rgba(0, 0, 0, 0.66);
+
+  --text: #ffffff;
+  --text-soft: #d6d6d6;
+  --text-secondary: #b3b3b3;
+  --text-muted: #8a8a8a;
+  --text-disabled: #6a6a6a;
+
+  --danger: #f15e6c;
+  --danger-soft: rgba(241, 94, 108, 0.15);
+  --border: #3a3a3a;
+
+  --radius-cover: 4px;
+  --radius: 8px;
+  --radius-sheet: 16px;
+  --pill: 999px;
+
+  --shadow-cover: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-sheet: 0 -12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-toast: 0 12px 32px rgba(0, 0, 0, 0.55);
+
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --screen-max: 480px;
+
+  color-scheme: dark;
+}
