@@ -19,7 +19,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Configurer lint, formatage, hooks pre-commit (PHPStan niv. 8, PHP-CS-Fixer, oxlint, hook `.githooks/pre-commit` activable avec `make hooks`)
 - [x] Mettre en place la base de données et l'ORM (PostgreSQL 18 + Doctrine)
 - [x] Variables d'environnement : `api/.env` (DB, Mercure, Spotify, `APP_CRYPTO_KEY`, `SPOTIFY_MARKET`) ; à reporter dans `shared/.env.local` en prod
-- [ ] Créer l'app sur le Spotify Developer Dashboard et déclarer les redirect URIs
+- [~] Créer l'app sur le Spotify Developer Dashboard et déclarer les redirect URIs (app créée, identifiants en local ; redirect URI de prod à déclarer)
 - [x] Mettre en place les design tokens (couleurs, typo, espacements) issus des maquettes (`front/src/styles/tokens.css`)
 - [x] Mettre en place l'infra Docker (Caddy, PHP-FPM, worker Messenger, Mercure, PostgreSQL, Node) + Makefile
 - [x] Mettre en place la CI (lint + tests) et le déploiement continu sur le VPS Infomaniak (`infrastructure/deploy/README.md`)
@@ -38,7 +38,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Liste et sélection des appareils
 - [x] Ajout d'un titre à la file Spotify
 - [x] Passer au titre suivant
-- [ ] Rejouer ces appels contre la vraie API (bloqué tant que les identifiants Spotify ne sont pas créés)
+- [~] Rejouer ces appels contre la vraie API : recherche et lecture d'un titre validées en local ; les endpoints lecteur attendent un compte Premium connecté en OAuth
 
 ## Phase 3 — Cœur métier
 - [x] Modèle de données : Host, Event, Guest, QueueItem, Vote
@@ -128,3 +128,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 16/10/2026 | Quota de propositions en attente porté de 3 à 5 pour coller aux maquettes (« 2 / 5 galettes en attente ») ; `presentation.md` aligné. |
 | 16/10/2026 | Les convives arrivent sur `/e/CODE` (`?c=CODE` accepté) : une seule route courte à encoder dans le QR code. |
 | 16/10/2026 | Les erreurs techniques Spotify ne sont jamais renvoyées aux convives (`spotifyUnreachable()` garde la cause dans les logs) ; les endpoints organisateur, eux, gardent le message exact. |
+| 16/10/2026 | Une app Spotify en mode développement refuse `limit > 10` sur `/search` (« Invalid limit ») : la recherche est plafonnée à 10 résultats. À relever si la demande d'extension de quota aboutit. |

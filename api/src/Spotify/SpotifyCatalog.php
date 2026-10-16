@@ -16,6 +16,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class SpotifyCatalog
 {
     private const SEARCH_TTL = 300;
+    /** Spotify rejects anything above 10 while the app is in development mode ("Invalid limit"). */
+    private const MAX_LIMIT = 10;
     private const TOKEN_URL = 'https://accounts.spotify.com/api/token';
 
     public function __construct(
@@ -32,12 +34,14 @@ class SpotifyCatalog
     }
 
     /** @return list<Track> */
-    public function search(string $query, int $limit = 20): array
+    public function search(string $query, int $limit = self::MAX_LIMIT): array
     {
         $query = trim($query);
         if ('' === $query) {
             return [];
         }
+
+        $limit = max(1, min(self::MAX_LIMIT, $limit));
 
         $key = 'spotify_search_'.hash('xxh128', $this->market.'|'.$limit.'|'.mb_strtolower($query));
 
