@@ -22,7 +22,11 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Créer l'app sur le Spotify Developer Dashboard et déclarer les redirect URIs
 - [ ] Mettre en place les design tokens (couleurs, typo, espacements) issus des maquettes
 - [x] Mettre en place l'infra Docker (Caddy, PHP-FPM, worker Messenger, Mercure, PostgreSQL, Node) + Makefile
-- [ ] Mettre en place la CI (lint + tests)
+- [x] Mettre en place la CI (lint + tests) et le déploiement continu sur le VPS Infomaniak (`infrastructure/deploy/README.md`)
+- [ ] Renseigner les secrets GitHub (`SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`) et `shared/.env.local` sur le VPS
+- [ ] Créer la base PostgreSQL de prod et pointer le vhost `pdg.alexandrechauvin.fr` sur `current/public`
+- [ ] **Choisir la solution temps réel de prod** : pas de Docker sur le VPS, donc pas de hub Mercure conteneurisé. Pistes : binaire Mercure lancé en service, hub Mercure hébergé, ou service tiers (Pusher / Ably). Tant que ce point n'est pas tranché, le temps réel ne fonctionne qu'en local.
+- [ ] Vérifier que le VPS autorise un processus long pour le worker Messenger ; sinon s'appuyer sur le cron `messenger:consume --time-limit=55` (voir `infrastructure/deploy/README.md`)
 
 ## Phase 2 — Intégration Spotify
 - [ ] OAuth Authorization Code + PKCE (connexion du compte maître)
@@ -114,3 +118,5 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 16/10/2026 | La file de référence est gérée par la plateforme ; Spotify ne reçoit qu'un titre à la fois (« juste à temps »), car son API ne permet pas de retirer ou réordonner sa file. |
 | 16/10/2026 | Stack : Symfony 8.1 + API Platform 5 (API), React 19 + Vite (front), PostgreSQL 18, Mercure pour le temps réel, Messenger + Scheduler pour le worker de lecture. Infra Docker calquée sur le projet iMariage. |
 | 16/10/2026 | En local, l'app est servie sur `https://127.0.0.1:8443` (et non `localhost`) : Spotify n'accepte plus `localhost` dans les redirect URIs, seulement l'IP de loopback explicite. |
+| 16/10/2026 | Déploiement calqué sur iMariage : la CI compile le front et l'injecte dans `api/public/`, envoie une archive par SSH, puis `deploy.sh` crée une version dans `releases/` et bascule le lien `current`. Apache sert `current/public`, le `.htaccess` route `/api` vers Symfony et le reste vers le front React. |
+| 16/10/2026 | `MERCURE_URL` ne doit jamais être vide en prod : le bundle basculerait sur le hub intégré de FrankenPHP, absent sous Apache, et `cache:clear` échouerait. |

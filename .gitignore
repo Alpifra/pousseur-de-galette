@@ -1,3 +1,6 @@
 .DS_Store
 .idea/
 .vscode/
+
+# Maquettes HTML exportées depuis Claude Design
+/*.html
