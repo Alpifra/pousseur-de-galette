@@ -131,7 +131,7 @@ class DemoSeedCommand extends Command
         $io->definitionList(
             ['Code' => $event->getJoinCode()],
             ['Organisateur' => self::HOST_EMAIL.' / '.self::HOST_PASSWORD],
-            ['URL' => '/rejoindre/'.$event->getJoinCode()],
+            ['URL' => '/e/'.$event->getJoinCode()],
         );
 
         return Command::SUCCESS;

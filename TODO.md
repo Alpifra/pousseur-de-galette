@@ -18,9 +18,9 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Initialiser le projet avec la stack retenue (`api/` Symfony + API Platform, `front/` React + TypeScript strict)
 - [~] Configurer lint, formatage, hooks pre-commit (PHPStan niv. 8, PHP-CS-Fixer, oxlint en place ; hooks pre-commit à faire)
 - [x] Mettre en place la base de données et l'ORM (PostgreSQL 18 + Doctrine)
-- [~] Variables d'environnement : `api/.env` (DB, Mercure, Spotify) en place ; clé de chiffrement des tokens à ajouter
+- [x] Variables d'environnement : `api/.env` (DB, Mercure, Spotify, `APP_CRYPTO_KEY`, `SPOTIFY_MARKET`) ; à reporter dans `shared/.env.local` en prod
 - [ ] Créer l'app sur le Spotify Developer Dashboard et déclarer les redirect URIs
-- [ ] Mettre en place les design tokens (couleurs, typo, espacements) issus des maquettes
+- [x] Mettre en place les design tokens (couleurs, typo, espacements) issus des maquettes (`front/src/styles/tokens.css`)
 - [x] Mettre en place l'infra Docker (Caddy, PHP-FPM, worker Messenger, Mercure, PostgreSQL, Node) + Makefile
 - [x] Mettre en place la CI (lint + tests) et le déploiement continu sur le VPS Infomaniak (`infrastructure/deploy/README.md`)
 - [ ] Renseigner les secrets GitHub (`SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`) et `shared/.env.local` sur le VPS
@@ -29,52 +29,54 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Vérifier que le VPS autorise un processus long pour le worker Messenger ; sinon s'appuyer sur le cron `messenger:consume --time-limit=55` (voir `infrastructure/deploy/README.md`)
 
 ## Phase 2 — Intégration Spotify
-- [ ] OAuth Authorization Code + PKCE (connexion du compte maître)
-- [ ] Stockage chiffré des tokens + rafraîchissement automatique
-- [ ] Vérification du compte Premium
-- [ ] Client API Spotify (gestion du 429 / `Retry-After`, erreurs réseau)
-- [ ] Recherche de titres (endpoint serveur + cache)
-- [ ] Lecture de l'état du lecteur / titre en cours
-- [ ] Liste et sélection des appareils
-- [ ] Ajout d'un titre à la file Spotify
-- [ ] Passer au titre suivant
+- [x] OAuth Authorization Code + PKCE (connexion du compte maître)
+- [x] Stockage chiffré des tokens + rafraîchissement automatique
+- [x] Vérification du compte Premium
+- [x] Client API Spotify (gestion du 429 / `Retry-After`, erreurs réseau)
+- [x] Recherche de titres (endpoint serveur + cache)
+- [x] Lecture de l'état du lecteur / titre en cours
+- [x] Liste et sélection des appareils
+- [x] Ajout d'un titre à la file Spotify
+- [x] Passer au titre suivant
+- [ ] Rejouer ces appels contre la vraie API (bloqué tant que les identifiants Spotify ne sont pas créés)
 
 ## Phase 3 — Cœur métier
-- [ ] Modèle de données : Host, Event, Guest, QueueItem, Vote
-- [ ] Création / démarrage / pause / clôture d'un événement
-- [ ] Génération du code court et du QR code
-- [ ] Session convive anonyme (pseudo + cookie signé)
-- [ ] Proposition d'un titre (doublons → upvote, quota par convive, délai avant rediffusion)
-- [ ] Votes up / down (unicité, changement, annulation)
-- [ ] Calcul du score et classement (épinglage, ancienneté)
-- [ ] Seuil de rejet automatique
-- [ ] Filtres : explicite, durée max
-- [ ] Paramètres d'événement
+- [x] Modèle de données : Host, Event, Guest, QueueItem, Vote
+- [x] Création / démarrage / pause / clôture d'un événement
+- [~] Génération du code court et du QR code (code court + URL `/e/CODE` en place ; image du QR à générer)
+- [x] Session convive anonyme (pseudo + cookie signé)
+- [x] Proposition d'un titre (doublons → upvote, quota par convive, délai avant rediffusion)
+- [x] Votes up / down (unicité, changement, annulation)
+- [x] Calcul du score et classement (épinglage, ancienneté)
+- [x] Seuil de rejet automatique
+- [x] Filtres : explicite, durée max
+- [x] Paramètres d'événement
 
 ## Phase 4 — Worker de lecture « juste à temps »
-- [ ] Boucle de suivi par événement actif
-- [ ] Verrouillage et envoi du titre n°1 à T−15 s
-- [ ] Détection du changement de titre → mise à jour des statuts
-- [ ] Gestion des titres « hors file » (ajoutés directement dans Spotify)
-- [ ] Gestion pause / appareil déconnecté / token expiré
-- [ ] Gestion de la file vide
-- [ ] Reprise après redémarrage du serveur
+- [x] Boucle de suivi par événement actif
+- [x] Verrouillage et envoi du titre n°1 à T−15 s
+- [x] Détection du changement de titre → mise à jour des statuts
+- [x] Gestion des titres « hors file » (ajoutés directement dans Spotify)
+- [x] Gestion pause / appareil déconnecté / token expiré
+- [x] Gestion de la file vide
+- [x] Reprise après redémarrage du serveur (tout l'état vit en base, le Scheduler relance la boucle)
 
 ## Phase 5 — Temps réel
-- [ ] Canal par événement
-- [ ] Diffusion : file, votes, titre en cours, statut de l'événement
-- [ ] Reconnexion automatique + resynchronisation de l'état
-- [ ] Indicateur de connexion côté client
+- [x] Canal par événement
+- [x] Diffusion : file, votes, titre en cours, statut de l'événement
+- [x] Reconnexion automatique + resynchronisation de l'état
+- [x] Indicateur de connexion côté client
 
 ## Phase 6 — Interface convive (mobile-first)
-- [ ] Écran « Rejoindre » (code / QR)
-- [ ] Saisie du pseudo
-- [ ] Écran principal : titre en cours + file
-- [ ] Boutons de vote avec retour visuel immédiat (optimistic UI)
-- [ ] Recherche avec debounce + résultats
-- [ ] Confirmation de proposition
-- [ ] « Mes galettes » (mes propositions)
-- [ ] États : vide, chargement, erreur, hors ligne, événement terminé/en pause, banni
+- [x] Écran « Rejoindre » (code / QR)
+- [x] Saisie du pseudo
+- [x] Écran principal : titre en cours + file
+- [x] Boutons de vote avec retour visuel immédiat (optimistic UI)
+- [x] Recherche avec debounce + résultats
+- [x] Confirmation de proposition
+- [x] « Mes galettes » (mes propositions)
+- [x] États : vide, chargement, erreur, hors ligne, événement terminé/en pause, banni
+- [ ] Relecture visuelle avec Alexandre sur mobile (parcours complet)
 
 ## Phase 7 — Interface organisateur
 - [ ] Inscription / connexion
@@ -86,8 +88,8 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Affichage / téléchargement du QR code
 
 ## Phase 8 — Qualité et mise en production
-- [ ] Tests unitaires (classement, règles de proposition, votes)
-- [ ] Tests d'intégration (client Spotify mocké, worker)
+- [~] Tests unitaires (classement, règles de proposition, votes) : 28 tests / 89 assertions
+- [~] Tests d'intégration (client Spotify mocké, worker) : parcours convive HTTP + domaine couverts, worker à couvrir
 - [ ] Tests E2E des parcours convive et hôte
 - [ ] Test de charge (300 convives simultanés)
 - [ ] Test en conditions réelles (soirée test)
@@ -120,3 +122,9 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 16/10/2026 | En local, l'app est servie sur `https://127.0.0.1:8443` (et non `localhost`) : Spotify n'accepte plus `localhost` dans les redirect URIs, seulement l'IP de loopback explicite. |
 | 16/10/2026 | Déploiement calqué sur iMariage : la CI compile le front et l'injecte dans `api/public/`, envoie une archive par SSH, puis `deploy.sh` crée une version dans `releases/` et bascule le lien `current`. Apache sert `current/public`, le `.htaccess` route `/api` vers Symfony et le reste vers le front React. |
 | 16/10/2026 | `MERCURE_URL` ne doit jamais être vide en prod : le bundle basculerait sur le hub intégré de FrankenPHP, absent sous Apache, et `cache:clear` échouerait. |
+| 16/10/2026 | Le front convive n'ajoute aucune dépendance : machine à états maison plutôt qu'un routeur, `fetch` plutôt qu'une lib de data-fetching, animation de réordonnancement en FLIP via `Element.animate()`, `EventSource` avec backoff écrit à la main. |
+| 16/10/2026 | Sans hub Mercure (cas de la prod aujourd'hui), le front retombe sur un rafraîchissement toutes les 10 s, plus une resynchronisation au retour d'onglet et au retour du réseau. |
+| 16/10/2026 | Mercure 0.20 (`dunglas/mercure:latest`) refuse le paramètre `topic` et attend `match` ; les hubs ≤ 0.19 font l'inverse. Le client tente `match` puis bascule sur `topic` si la première connexion échoue, pour rester compatible avec le hub qui sera choisi en prod. |
+| 16/10/2026 | Quota de propositions en attente porté de 3 à 5 pour coller aux maquettes (« 2 / 5 galettes en attente ») ; `presentation.md` aligné. |
+| 16/10/2026 | Les convives arrivent sur `/e/CODE` (`?c=CODE` accepté) : une seule route courte à encoder dans le QR code. |
+| 16/10/2026 | Les erreurs techniques Spotify ne sont jamais renvoyées aux convives (`spotifyUnreachable()` garde la cause dans les logs) ; les endpoints organisateur, eux, gardent le message exact. |

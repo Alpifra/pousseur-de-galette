@@ -14,8 +14,9 @@ class DomainException extends \RuntimeException
         public readonly int $statusCode = 422,
         /** @var array<string, int|string|bool> */
         public readonly array $context = [],
+        ?\Throwable $previous = null,
     ) {
-        parent::__construct($message);
+        parent::__construct($message, 0, $previous);
     }
 
     public static function eventNotLive(): self
@@ -81,5 +82,11 @@ class DomainException extends \RuntimeException
     public static function spotifyUnavailable(string $reason): self
     {
         return new self('spotify_unavailable', $reason, 503);
+    }
+
+    /** Same contract, but the technical cause stays in the logs: guests must not read it. */
+    public static function spotifyUnreachable(\Throwable $cause): self
+    {
+        return new self('spotify_unavailable', 'Spotify ne répond pas, réessaie dans un instant.', 503, [], $cause);
     }
 }

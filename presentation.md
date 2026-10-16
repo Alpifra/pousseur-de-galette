@@ -120,7 +120,7 @@ Lors d'un mariage, d'un anniversaire ou d'une soirée privée, la musique est so
 ### 6.3 Propositions
 - Un titre déjà présent dans la file ne peut pas être reproposé : la tentative devient un upvote.
 - Un titre joué depuis moins de X minutes (paramétrable) ne peut pas être reproposé.
-- Nombre maximal de propositions **en attente** par convive (paramétrable, ex. 3) pour éviter qu'une seule personne monopolise la file.
+- Nombre maximal de propositions **en attente** par convive (paramétrable, ex. 5) pour éviter qu'une seule personne monopolise la file.
 - Filtres optionnels : contenus explicites, durée maximale d'un titre.
 
 ### 6.4 Paramètres d'un événement
@@ -128,7 +128,7 @@ Lors d'un mariage, d'un anniversaire ou d'une soirée privée, la musique est so
 |---|---|
 | Autoriser les downvotes | Oui |
 | Seuil de rejet automatique | −5 |
-| Propositions en attente max / convive | 3 |
+| Propositions en attente max / convive | 5 |
 | Délai avant de rejouer un titre | 120 min |
 | Bloquer les titres explicites | Non |
 | Durée max d'un titre | 10 min |

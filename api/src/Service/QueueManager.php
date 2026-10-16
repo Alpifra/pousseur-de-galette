@@ -61,7 +61,7 @@ class QueueManager
         try {
             $track = $this->catalog->track($spotifyId);
         } catch (SpotifyException $e) {
-            throw DomainException::spotifyUnavailable($e->getMessage());
+            throw DomainException::spotifyUnreachable($e);
         }
 
         if (null === $track) {

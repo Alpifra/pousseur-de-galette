@@ -34,7 +34,7 @@ class SearchController
         try {
             $tracks = $this->catalog->search($query);
         } catch (SpotifyException $e) {
-            throw DomainException::spotifyUnavailable($e->getMessage());
+            throw DomainException::spotifyUnreachable($e);
         }
 
         $event = $guest->getEvent();
