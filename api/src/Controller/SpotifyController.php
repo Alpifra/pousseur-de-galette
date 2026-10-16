@@ -79,7 +79,7 @@ class SpotifyController
         $host->setSpotifyProduct($profile['product']);
         $this->em->flush();
 
-        return new RedirectResponse($host->hasPremium() ? '/host?spotify=connected' : '/host?spotify=not_premium');
+        return new RedirectResponse($host->isPremiumRejected() ? '/host?spotify=not_premium' : '/host?spotify=connected');
     }
 
     #[Route('/status', name: 'api_spotify_status', methods: ['GET'])]
@@ -90,7 +90,7 @@ class SpotifyController
         return new JsonResponse([
             'configured' => $this->oauth->isConfigured(),
             'connected' => $host->isSpotifyConnected(),
-            'premium' => $host->hasPremium(),
+            'premium' => null === $host->getSpotifyProduct() ? null : $host->isPremiumConfirmed(),
             'spotifyUserId' => $host->getSpotifyUserId(),
         ]);
     }

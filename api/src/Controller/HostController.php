@@ -42,7 +42,7 @@ class HostController
             'email' => $host->getEmail(),
             'spotify' => [
                 'connected' => $host->isSpotifyConnected(),
-                'premium' => $host->hasPremium(),
+                'premium' => null === $host->getSpotifyProduct() ? null : $host->isPremiumConfirmed(),
             ],
             'events' => array_map(static fn ($event) => [
                 'id' => (string) $event->getId(),

@@ -31,7 +31,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 ## Phase 2 — Intégration Spotify
 - [x] OAuth Authorization Code + PKCE (connexion du compte maître)
 - [x] Stockage chiffré des tokens + rafraîchissement automatique
-- [x] Vérification du compte Premium
+- [~] Vérification du compte Premium : `GET /me` ne renvoie plus `product`, la connexion n'est plus bloquée ; reste à traiter le 403 `PREMIUM_REQUIRED` des endpoints lecteur
 - [x] Client API Spotify (gestion du 429 / `Retry-After`, erreurs réseau)
 - [x] Recherche de titres (endpoint serveur + cache)
 - [x] Lecture de l'état du lecteur / titre en cours
@@ -129,3 +129,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 16/10/2026 | Les convives arrivent sur `/e/CODE` (`?c=CODE` accepté) : une seule route courte à encoder dans le QR code. |
 | 16/10/2026 | Les erreurs techniques Spotify ne sont jamais renvoyées aux convives (`spotifyUnreachable()` garde la cause dans les logs) ; les endpoints organisateur, eux, gardent le message exact. |
 | 16/10/2026 | Une app Spotify en mode développement refuse `limit > 10` sur `/search` (« Invalid limit ») : la recherche est plafonnée à 10 résultats. À relever si la demande d'extension de quota aboutit. |
+| 16/10/2026 | Changements Web API de février 2026 : `GET /me` ne renvoie plus `product` (ni `country`, ni `email`), les lectures groupées (`/tracks?ids=`) et `GET /markets` disparaissent, et `limit` de `/search` plafonne à 10. Le code ne lit aucun champ supprimé en dehors de `product`, dont l'absence vaut désormais « inconnu » et ne bloque plus la connexion de l'hôte : Spotify impose déjà Premium au propriétaire de l'app. |

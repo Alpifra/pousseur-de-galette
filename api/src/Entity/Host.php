@@ -127,9 +127,15 @@ class Host implements UserInterface, PasswordAuthenticatedUserInterface
         $this->spotifyProduct = $spotifyProduct;
     }
 
-    public function hasPremium(): bool
+    /** Spotify dropped `product` from GET /me in February 2026: null means unknown, not free. */
+    public function isPremiumConfirmed(): bool
     {
         return 'premium' === $this->spotifyProduct;
+    }
+
+    public function isPremiumRejected(): bool
+    {
+        return null !== $this->spotifyProduct && 'premium' !== $this->spotifyProduct;
     }
 
     public function getSpotifyAccessToken(): ?string
