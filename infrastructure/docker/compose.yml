@@ -1,0 +1,100 @@
+name: pousseur-de-galette
+
+x-php: &php
+    build:
+        context: .
+        dockerfile: ./php/php.dockerfile
+    depends_on:
+        - database
+    restart: unless-stopped
+    volumes:
+        - var:/srv/app/var
+        - ./php/conf.d/php.ini:/usr/local/etc/php/conf.d/php.ini
+        - ./php/conf.d/symfony.dev.ini:/usr/local/etc/php/conf.d/symfony.ini
+        - ../../api:/srv/app:rw,cached
+    environment:
+        APP_ENV: dev
+        DATABASE_URL: postgresql://${POSTGRES_USER:-galette}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-galette}?serverVersion=${POSTGRES_VERSION:-18}&charset=utf8
+        MERCURE_URL: http://mercure/.well-known/mercure
+        MERCURE_PUBLIC_URL: https://${SERVER_NAME:-127.0.0.1}:${HTTPS_PORT:-8443}/.well-known/mercure
+        MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+        MERCURE_JWT_ISSUER: https://${SERVER_NAME:-127.0.0.1}:${HTTPS_PORT:-8443}
+        MERCURE_JWT_AUDIENCE: https://${SERVER_NAME:-127.0.0.1}:${HTTPS_PORT:-8443}
+
+services:
+
+    caddy:
+        image: caddy:2-alpine
+        depends_on:
+            - php
+            - front
+            - mercure
+        environment:
+            SERVER_NAME: ${SERVER_NAME:-127.0.0.1}
+        restart: unless-stopped
+        volumes:
+            - caddy_data:/data
+            - caddy_config:/config
+            - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+            - ../../api/public:/srv/app/public:ro
+        ports:
+            - target: 443
+              published: ${HTTPS_PORT:-8443}
+              protocol: tcp
+            - target: 443
+              published: ${HTTPS_PORT:-8443}
+              protocol: udp
+
+    php: *php
+
+    worker:
+        <<: *php
+        command: php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M -vv
+
+    mercure:
+        image: dunglas/mercure
+        restart: unless-stopped
+        environment:
+            SERVER_NAME: ':80'
+            MERCURE_TRUSTED_ISSUERS: https://${SERVER_NAME:-127.0.0.1}:${HTTPS_PORT:-8443}
+            MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+            MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
+            MERCURE_EXTRA_DIRECTIVES: |-
+                resource_identifier https://${SERVER_NAME:-127.0.0.1}:${HTTPS_PORT:-8443}
+                anonymous
+                cors_origins https://${SERVER_NAME:-127.0.0.1}:${HTTPS_PORT:-8443}
+        volumes:
+            - mercure_data:/data
+            - mercure_config:/config
+
+    database:
+        image: postgres:${POSTGRES_VERSION:-18}-alpine
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB:-galette}
+            POSTGRES_USER: ${POSTGRES_USER:-galette}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+        volumes:
+            - database_data:/var/lib/postgresql
+        ports:
+            - "${POSTGRES_PORT:-5433}:5432"
+
+    front:
+        image: node:24-alpine
+        working_dir: /app
+        command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+        environment:
+            VITE_HMR_CLIENT_PORT: ${HTTPS_PORT:-8443}
+        restart: unless-stopped
+        volumes:
+            - ../../front:/app:rw,cached
+            - front_node_modules:/app/node_modules
+
+volumes:
+    var:
+    caddy_data:
+    caddy_config:
+    mercure_data:
+    mercure_config:
+    database_data:
+    front_node_modules:
