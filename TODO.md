@@ -16,7 +16,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 ## Phase 1 — Initialisation
 - [x] Initialiser le dépôt Git dédié au projet
 - [x] Initialiser le projet avec la stack retenue (`api/` Symfony + API Platform, `front/` React + TypeScript strict)
-- [~] Configurer lint, formatage, hooks pre-commit (PHPStan niv. 8, PHP-CS-Fixer, oxlint en place ; hooks pre-commit à faire)
+- [x] Configurer lint, formatage, hooks pre-commit (PHPStan niv. 8, PHP-CS-Fixer, oxlint, hook `.githooks/pre-commit` activable avec `make hooks`)
 - [x] Mettre en place la base de données et l'ORM (PostgreSQL 18 + Doctrine)
 - [x] Variables d'environnement : `api/.env` (DB, Mercure, Spotify, `APP_CRYPTO_KEY`, `SPOTIFY_MARKET`) ; à reporter dans `shared/.env.local` en prod
 - [ ] Créer l'app sur le Spotify Developer Dashboard et déclarer les redirect URIs

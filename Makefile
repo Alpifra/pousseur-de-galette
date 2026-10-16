@@ -16,7 +16,7 @@ NPM      = $(FRONT_CONT) npm
 
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh worker psql front-sh composer vendor sf cc analyse lint fix db drop test-db test npm
+.PHONY        : help build up start down logs sh worker psql front-sh composer vendor sf cc analyse lint lint-php lint-front fix hooks db drop test-db test npm
 
 ## —— 🎵 🐳 Pousseur de Galette Makefile 🐳 🎵 ————————————————————————————————————————————
 help: ## Outputs this help screen
@@ -70,12 +70,20 @@ cc: sf
 analyse: ## Perform a static PHP code test of the project, see config file ./api/phpstan.dist.neon
 	@$(PHPSTAN) analyse --memory-limit=512M
 
-lint: ## Check PHP code style (dry run) and front lint
+lint: lint-php lint-front ## Check PHP code style (dry run) and front lint
+
+lint-php: ## Check PHP code style (dry run)
 	@$(CSFIXER) fix --dry-run --diff
+
+lint-front: ## Lint the front
 	@$(NPM) run lint
 
 fix: ## Fix PHP code style
 	@$(CSFIXER) fix
+
+hooks: ## Enable the Git hooks of .githooks (pre-commit lint)
+	@git config core.hooksPath .githooks
+	@echo "Git hooks enabled (.githooks)"
 
 ## —— Database 💾 ———————————————————————————————————————————————————————————————
 db: ## Create and migrate database
