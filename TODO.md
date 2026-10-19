@@ -10,7 +10,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Répondre aux questions ouvertes (§ 14 de `presentation.md`)
 - [x] Choisir la stack technique (Symfony 8.1 / API Platform 5 + React 19 / Vite)
 - [ ] Valider la couleur d'accent
-- [ ] Vérifier les conditions actuelles de l'API Spotify (mode développement, quotas, charte, usage commercial)
+- [x] Vérifier les conditions actuelles de l'API Spotify (mode développement, quotas, charte, usage commercial) — voir `presentation.md` § 7.5
 - [ ] Faire réaliser les maquettes (Claude Design) et les valider
 
 ## Phase 1 — Initialisation
@@ -76,6 +76,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Confirmation de proposition
 - [x] « Mes galettes » (mes propositions)
 - [x] États : vide, chargement, erreur, hors ligne, événement terminé/en pause, banni
+- [ ] Attribution Spotify dans l'interface convive (logo + lien « Écouter sur Spotify ») — exigée par la charte, voir `presentation.md` § 7.5
 - [ ] Relecture visuelle avec Alexandre sur mobile (parcours complet)
 
 ## Phase 7 — Interface organisateur
@@ -97,7 +98,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Mentions légales, politique de confidentialité, purge des données
 - [ ] Hébergement, domaine, HTTPS
 - [ ] Monitoring et logs d'erreurs
-- [ ] Demande d'extension de quota Spotify (si ouverture publique)
+- [!] Demande d'extension de quota Spotify : hors de portée (organisations, 250 000 MAU minimum) — le produit reste plafonné à 5 comptes organisateurs
 
 ## V2 — Évolutions
 - [ ] Écran de diffusion (mode TV)
@@ -132,3 +133,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 16/10/2026 | Changements Web API de février 2026 : `GET /me` ne renvoie plus `product` (ni `country`, ni `email`), les lectures groupées (`/tracks?ids=`) et `GET /markets` disparaissent, et `limit` de `/search` plafonne à 10. Le code ne lit aucun champ supprimé en dehors de `product`, dont l'absence vaut désormais « inconnu » et ne bloque plus la connexion de l'hôte : Spotify impose déjà Premium au propriétaire de l'app. |
 | 19/10/2026 | `created_at` n'a qu'une seconde de précision : deux propositions faites dans la même seconde avec le même score pouvaient permuter d'une requête à l'autre. Le classement se termine désormais par l'UUIDv7, qui encode l'ordre de création. |
 | 19/10/2026 | QR code rendu côté serveur en SVG avec `bacon/bacon-qr-code` (nouvelle dépendance) : l'image PHP n'embarque pas `ext-gd`, et un SVG s'imprime sans perte sur une affiche. Niveau de correction maximal (30 %) pour rester lisible de loin et à moitié masqué. |
+| 19/10/2026 | Conditions Spotify vérifiées (§ 7.5 de `presentation.md`) : l'extension de quota est hors de portée (250 000 MAU), donc 5 comptes organisateurs maximum ; les convives ne comptent pas, ils ne s'authentifient jamais. L'app étant *non-streaming*, vendre l'accès reste autorisé, mais la charte impose le logo Spotify et un lien de retour vers chaque titre. |

@@ -180,8 +180,25 @@ L'API Spotify permet d'**ajouter** un titre à la file, mais **pas d'en retirer 
 ### 7.4 Limites et points de vigilance
 - **Spotify Premium obligatoire** pour le compte maître (les endpoints de contrôle du lecteur ne fonctionnent pas en Free).
 - **Rate limiting** (HTTP 429 + `Retry-After`) : debounce de la recherche côté client (~300 ms), cache serveur des résultats de recherche, un seul worker de suivi par événement.
-- **Mode développement Spotify** : une app Spotify en mode développement est limitée à un petit nombre d'utilisateurs autorisés (les organisateurs, pas les convives). Une ouverture publique nécessite une demande d'extension de quota auprès de Spotify. **Conditions actuelles à vérifier sur le Developer Dashboard avant le lancement.**
-- **Conditions d'utilisation et charte Spotify** : obligation d'afficher l'attribution Spotify (logo / lien vers le titre), de ne pas altérer les pochettes, et de **ne pas laisser croire que l'app est un produit Spotify**. La DA « proche de Spotify » (§ 9) doit donc rester une inspiration : nom, logo et couleur d'accent propres. **À relire avant la mise en production, notamment pour tout usage commercial.**
+- **Mode développement Spotify** : voir § 7.5, le plafond de 5 comptes autorisés ne concerne que les organisateurs.
+- **Conditions d'utilisation et charte Spotify** : voir § 7.5.
+
+### 7.5 Conditions Spotify (vérifiées le 19/10/2026)
+
+**Quotas.** Une app neuve est en *development mode* : le propriétaire de l'app doit être Premium et **5 utilisateurs authentifiés maximum** peuvent s'y connecter, chacun ajouté à la main dans *User Management* ; un compte hors liste reçoit un 403. Les convives ne s'authentifient jamais auprès de Spotify (la recherche passe par le jeton applicatif *client credentials*) : **ce plafond ne compte que les organisateurs**. Une soirée peut donc réunir autant de convives que voulu.
+
+**Extension de quota : hors de portée.** Depuis le 15/05/2025, Spotify n'accepte plus que les candidatures d'organisations, et demande une entité légale, un service déjà lancé, **au moins 250 000 utilisateurs actifs mensuels**, une présence sur les marchés clés et une viabilité commerciale ; la revue prend jusqu'à six semaines. Conséquence à assumer : le produit reste limité à 5 comptes organisateurs. Tant qu'Alexandre est l'organisateur de chaque soirée (un seul compte Spotify, le sien), c'est sans effet ; un SaaS multi-organisateurs ne l'est pas sur cette voie.
+
+**Usage commercial.** L'app ne diffuse pas elle-même de musique — elle pilote le lecteur Spotify de l'organisateur — c'est donc une *Non-Streaming SDA*. À ce titre, la *Developer Policy* autorise explicitement deux usages commerciaux (IV.3) : vendre de la publicité ou du sponsoring dans l'app, et vendre l'app ou l'accès à l'app. Deux réserves : la clause III.10 interdit les produits **destinés aux entreprises** et rappelle que Spotify est un service personnel qui n'a pas vocation à être diffusé publiquement depuis un commerce ; et les droits de diffusion publique (SACEM en France) restent à la charge du lieu ou de l'organisateur, hors du champ de Spotify. Un mariage privé reste du bon côté ; vendre l'outil à des DJ professionnels ou à des salles demande un avis juridique.
+
+**Charte.** Obligations qui touchent directement l'interface :
+- attribuer le contenu avec le logo Spotify (icône + mot-clé, le logo vert uniquement sur fond noir ou blanc, sinon monochrome) ;
+- proposer un lien de retour vers Spotify sur les métadonnées et les pochettes (« OPEN SPOTIFY » / « PLAY ON SPOTIFY », ou « GET SPOTIFY FREE » si l'app n'est pas installée) ;
+- ne jamais retoucher les pochettes (pas de recadrage, de flou ni d'incrustation) ;
+- ne pas dépasser 20 éléments par liste de contenus Spotify (la recherche en renvoie 10) ;
+- nom, logo et couleur d'accent propres : rien qui évoque le vert, le cercle ou les ondes de Spotify, ni qui laisse croire à un produit officiel.
+
+**Interdit, pour mémoire.** Entraîner ou alimenter un modèle d'IA avec du contenu Spotify (Developer Terms v10), analyser le service à des fins de mesure d'audience ou de ciblage publicitaire (III.13).
 
 ---
 
