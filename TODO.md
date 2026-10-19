@@ -43,7 +43,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 ## Phase 3 — Cœur métier
 - [x] Modèle de données : Host, Event, Guest, QueueItem, Vote
 - [x] Création / démarrage / pause / clôture d'un événement
-- [~] Génération du code court et du QR code (code court + URL `/e/CODE` en place ; image du QR à générer)
+- [x] Génération du code court et du QR code (`GET /api/host/events/{code}/qr.svg`, SVG imprimable ; l'affichage côté organisateur reste en phase 7)
 - [x] Session convive anonyme (pseudo + cookie signé)
 - [x] Proposition d'un titre (doublons → upvote, quota par convive, délai avant rediffusion)
 - [x] Votes up / down (unicité, changement, annulation)
@@ -88,7 +88,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Affichage / téléchargement du QR code
 
 ## Phase 8 — Qualité et mise en production
-- [~] Tests unitaires (classement, règles de proposition, votes) : 28 tests / 89 assertions
+- [~] Tests unitaires (classement, règles de proposition, votes) : 41 tests / 119 assertions
 - [~] Tests d'intégration (client Spotify mocké, worker) : parcours convive HTTP, domaine et worker de lecture couverts ; reste la couche Spotify elle-même (client, OAuth, rafraîchissement)
 - [ ] Tests E2E des parcours convive et hôte
 - [ ] Test de charge (300 convives simultanés)
@@ -131,3 +131,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 16/10/2026 | Une app Spotify en mode développement refuse `limit > 10` sur `/search` (« Invalid limit ») : la recherche est plafonnée à 10 résultats. À relever si la demande d'extension de quota aboutit. |
 | 16/10/2026 | Changements Web API de février 2026 : `GET /me` ne renvoie plus `product` (ni `country`, ni `email`), les lectures groupées (`/tracks?ids=`) et `GET /markets` disparaissent, et `limit` de `/search` plafonne à 10. Le code ne lit aucun champ supprimé en dehors de `product`, dont l'absence vaut désormais « inconnu » et ne bloque plus la connexion de l'hôte : Spotify impose déjà Premium au propriétaire de l'app. |
 | 19/10/2026 | `created_at` n'a qu'une seconde de précision : deux propositions faites dans la même seconde avec le même score pouvaient permuter d'une requête à l'autre. Le classement se termine désormais par l'UUIDv7, qui encode l'ordre de création. |
+| 19/10/2026 | QR code rendu côté serveur en SVG avec `bacon/bacon-qr-code` (nouvelle dépendance) : l'image PHP n'embarque pas `ext-gd`, et un SVG s'imprime sans perte sur une affiche. Niveau de correction maximal (30 %) pour rester lisible de loin et à moitié masqué. |

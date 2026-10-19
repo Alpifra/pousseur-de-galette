@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Enum\EventStatus;
 use App\Repository\HostRepository;
 use App\Service\EventManager;
+use App\Service\JoinLink;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,6 +20,7 @@ class EventCreateCommand extends Command
     public function __construct(
         private HostRepository $hosts,
         private EventManager $events,
+        private JoinLink $links,
     ) {
         parent::__construct();
     }
@@ -49,6 +51,7 @@ class EventCreateCommand extends Command
         $io->success(sprintf('Soirée « %s » créée (%s).', $event->getName(), $event->getStatus()->value));
         $io->definitionList(
             ['Code' => $event->getJoinCode()],
+            ['URL' => $this->links->url($event)],
             ['Id' => (string) $event->getId()],
         );
 

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Host;
 use App\Exception\DomainException;
+use App\Service\JoinLink;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,8 +12,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/host')]
 class HostController
 {
-    public function __construct(private Security $security)
-    {
+    public function __construct(
+        private Security $security,
+        private JoinLink $links,
+    ) {
     }
 
     /** Handled by the json_login firewall; the body is never reached. */
@@ -44,11 +47,12 @@ class HostController
                 'connected' => $host->isSpotifyConnected(),
                 'premium' => null === $host->getSpotifyProduct() ? null : $host->isPremiumConfirmed(),
             ],
-            'events' => array_map(static fn ($event) => [
+            'events' => array_map(fn ($event) => [
                 'id' => (string) $event->getId(),
                 'name' => $event->getName(),
                 'status' => $event->getStatus()->value,
                 'joinCode' => $event->getJoinCode(),
+                'joinUrl' => $this->links->url($event),
             ], $host->getEvents()->toArray()),
         ]);
     }

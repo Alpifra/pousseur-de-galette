@@ -12,6 +12,7 @@ use App\Enum\EventStatus;
 use App\Repository\HostRepository;
 use App\Service\GuestSession;
 use App\Service\JoinCodeGenerator;
+use App\Service\JoinLink;
 use App\Service\QueueManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -48,6 +49,7 @@ class DemoSeedCommand extends Command
     public function __construct(
         private HostRepository $hosts,
         private JoinCodeGenerator $joinCodes,
+        private JoinLink $links,
         private UserPasswordHasherInterface $hasher,
         private QueueManager $queue,
         private EntityManagerInterface $em,
@@ -131,7 +133,7 @@ class DemoSeedCommand extends Command
         $io->definitionList(
             ['Code' => $event->getJoinCode()],
             ['Organisateur' => self::HOST_EMAIL.' / '.self::HOST_PASSWORD],
-            ['URL' => '/e/'.$event->getJoinCode()],
+            ['URL' => $this->links->url($event)],
         );
 
         return Command::SUCCESS;
