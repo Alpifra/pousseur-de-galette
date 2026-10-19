@@ -15,7 +15,7 @@ final class FakeSpotifyCatalog extends SpotifyCatalog
     {
     }
 
-    public function search(string $query, int $limit = 20): array
+    public function search(string $query, int $limit = 10): array
     {
         return array_values($this->tracks);
     }

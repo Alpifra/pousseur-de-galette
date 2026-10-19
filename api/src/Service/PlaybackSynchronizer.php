@@ -9,6 +9,7 @@ use App\Enum\EventStatus;
 use App\Enum\QueueItemStatus;
 use App\Repository\QueueItemRepository;
 use App\Spotify\NoActiveDeviceException;
+use App\Spotify\PremiumRequiredException;
 use App\Spotify\SpotifyAuthException;
 use App\Spotify\SpotifyException;
 use App\Spotify\SpotifyPlayer;
@@ -61,6 +62,10 @@ class PlaybackSynchronizer
             return;
         } catch (NoActiveDeviceException) {
             $this->fail($event, 'no_device');
+
+            return;
+        } catch (PremiumRequiredException) {
+            $this->fail($event, 'premium_required');
 
             return;
         } catch (SpotifyException $e) {
@@ -188,6 +193,10 @@ class PlaybackSynchronizer
 
         try {
             $this->player->enqueue($event->getHost(), $next->getTrack()->uri(), $event->getSpotifyDeviceId());
+        } catch (PremiumRequiredException) {
+            $this->fail($event, 'premium_required');
+
+            return false;
         } catch (SpotifyException $e) {
             $this->logger->error('Unable to push the next track to Spotify', [
                 'event' => (string) $event->getId(),

@@ -70,6 +70,10 @@ class SpotifyClient
             throw new SpotifyAuthException(\sprintf('Spotify rejected the access token (%s %s).', $method, $path));
         }
 
+        if (403 === $status && str_contains($content, 'PREMIUM_REQUIRED')) {
+            throw new PremiumRequiredException('The connected Spotify account is not Premium.');
+        }
+
         if (404 === $status && str_contains($content, 'NO_ACTIVE_DEVICE')) {
             throw new NoActiveDeviceException('No active Spotify device on the host account.');
         }

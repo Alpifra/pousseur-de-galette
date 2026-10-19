@@ -173,6 +173,8 @@ class QueueItemRepository extends ServiceEntityRepository
             ->setParameter('status', QueueItemStatus::Pending)
             ->orderBy('q.pinned', 'DESC')
             ->addOrderBy('q.score', 'DESC')
-            ->addOrderBy('q.createdAt', 'ASC');
+            ->addOrderBy('q.createdAt', 'ASC')
+            // createdAt only has a second of precision: UUIDv7 keeps same-second proposals in a stable order
+            ->addOrderBy('q.id', 'ASC');
     }
 }
