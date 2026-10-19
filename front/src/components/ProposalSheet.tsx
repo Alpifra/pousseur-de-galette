@@ -2,8 +2,10 @@ import { useState } from 'react'
 import type { PersonalSnapshot, SearchResult } from '../api/types.ts'
 import { duration, ordinal, waitLabel } from '../lib/format.ts'
 import { estimate } from '../state/estimate.ts'
+import { trackUrl } from '../lib/spotify.ts'
 import { CoverArt } from './CoverArt.tsx'
 import { ArrowUp } from './Icons.tsx'
+import { SpotifyLink } from './SpotifyLink.tsx'
 
 interface Props {
   result: SearchResult
@@ -36,6 +38,7 @@ export function ProposalSheet({ result, snapshot, onCancel, onConfirm }: Props) 
             <span className="row__meta">
               {result.artist} · {duration(result.durationMs)}
             </span>
+            <SpotifyLink href={trackUrl(result.spotifyId)} />
           </div>
         </div>
 

@@ -443,6 +443,13 @@
   color: var(--text-soft);
 }
 
+.spotify-link {
+  align-self: flex-start;
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: underline;
+}
+
 .current__progress {
   display: flex;
   flex-direction: column;

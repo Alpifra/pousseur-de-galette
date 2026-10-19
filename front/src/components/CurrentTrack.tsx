@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import type { CurrentTrackView } from '../api/types.ts'
 import { duration, remaining } from '../lib/format.ts'
+import { trackUrl } from '../lib/spotify.ts'
 import { CoverArt } from './CoverArt.tsx'
+import { SpotifyLink } from './SpotifyLink.tsx'
 
 /** The server only pushes the playback position every few seconds: the bar is extrapolated in between. */
 function Progress({
@@ -57,6 +59,7 @@ export function CurrentTrack({ current }: { current: CurrentTrackView }) {
           <span className="kicker">{current.isPlaying ? 'En cours' : 'En pause'}</span>
           <span className="current__title">{current.name ?? 'Titre inconnu'}</span>
           <span className="current__artist">{current.artist}</span>
+          <SpotifyLink href={trackUrl(current.spotifyId)} />
           {current.proposedBy !== null ? (
             <span className="current__by">proposé par {current.proposedBy.pseudo}</span>
           ) : (
