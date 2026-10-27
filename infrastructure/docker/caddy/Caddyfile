@@ -3,7 +3,8 @@
 	default_sni {$SERVER_NAME:127.0.0.1}
 }
 
-{$SERVER_NAME:127.0.0.1} {
+# The bare :443 catches the LAN IP, so phones on the same Wi-Fi reach the app with the loopback certificate
+{$SERVER_NAME:127.0.0.1}, :443 {
 	log
 
 	handle /.well-known/mercure* {

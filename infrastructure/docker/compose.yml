@@ -16,7 +16,8 @@ x-php: &php
         APP_ENV: dev
         DATABASE_URL: postgresql://${POSTGRES_USER:-galette}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-galette}?serverVersion=${POSTGRES_VERSION:-18}&charset=utf8
         MERCURE_URL: http://mercure/.well-known/mercure
-        MERCURE_PUBLIC_URL: https://${SERVER_NAME:-127.0.0.1}/.well-known/mercure
+        # Relative: the same hub works whether the page was opened on the loopback or on the LAN IP
+        MERCURE_PUBLIC_URL: /.well-known/mercure
         MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
         MERCURE_JWT_ISSUER: https://${SERVER_NAME:-127.0.0.1}
         MERCURE_JWT_AUDIENCE: https://${SERVER_NAME:-127.0.0.1}
