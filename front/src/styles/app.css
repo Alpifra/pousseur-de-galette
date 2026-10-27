@@ -413,10 +413,20 @@
 
 .current__text {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  align-self: stretch;
   gap: 4px;
   min-width: 0;
   padding-bottom: 4px;
+}
+
+/* In the flow so a two-line title cannot run under it; padding + gap = Spotify's clear space (half the icon) */
+.current__spotify {
+  align-self: flex-end;
+  margin-bottom: auto;
+  padding-bottom: 8px;
+  line-height: 0;
 }
 
 .kicker {

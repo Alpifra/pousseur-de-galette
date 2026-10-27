@@ -76,7 +76,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Confirmation de proposition
 - [x] « Mes galettes » (mes propositions)
 - [x] États : vide, chargement, erreur, hors ligne, événement terminé/en pause, banni
-- [~] Attribution Spotify dans l'interface convive (charte, `presentation.md` § 7.5) : lien « Écouter sur Spotify » en place ; reste le logo officiel, à télécharger depuis les ressources de design Spotify (il ne doit pas être redessiné)
+- [x] Attribution Spotify dans l'interface convive (charte, `presentation.md` § 7.5) : logo officiel blanc sur la carte « En cours », cliquable vers le titre ; lien « Écouter sur Spotify » dans la fiche de proposition
 - [ ] Relecture visuelle avec Alexandre sur mobile (parcours complet)
 
 ## Phase 7 — Interface organisateur

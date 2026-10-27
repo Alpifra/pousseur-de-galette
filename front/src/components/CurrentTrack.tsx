@@ -3,7 +3,6 @@ import type { CurrentTrackView } from '../api/types.ts'
 import { duration, remaining } from '../lib/format.ts'
 import { trackUrl } from '../lib/spotify.ts'
 import { CoverArt } from './CoverArt.tsx'
-import { SpotifyLink } from './SpotifyLink.tsx'
 
 /** The server only pushes the playback position every few seconds: the bar is extrapolated in between. */
 function Progress({
@@ -56,10 +55,19 @@ export function CurrentTrack({ current }: { current: CurrentTrackView }) {
       <div className="current__top">
         <CoverArt url={current.coverUrl} seed={current.spotifyId} className="current__cover" />
         <div className="current__text">
+          <a
+            className="current__spotify"
+            href={trackUrl(current.spotifyId)}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Écouter sur Spotify"
+          >
+            {/* Official artwork: Spotify forbids redrawing or recolouring it beyond its monochrome variants */}
+            <img src="/spotify-logo.svg" alt="" width={78} height={22} />
+          </a>
           <span className="kicker">{current.isPlaying ? 'En cours' : 'En pause'}</span>
           <span className="current__title">{current.name ?? 'Titre inconnu'}</span>
           <span className="current__artist">{current.artist}</span>
-          <SpotifyLink href={trackUrl(current.spotifyId)} />
           {current.proposedBy !== null ? (
             <span className="current__by">proposé par {current.proposedBy.pseudo}</span>
           ) : (
