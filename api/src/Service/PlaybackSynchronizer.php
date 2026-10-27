@@ -10,6 +10,7 @@ use App\Enum\QueueItemStatus;
 use App\Repository\QueueItemRepository;
 use App\Spotify\NoActiveDeviceException;
 use App\Spotify\PremiumRequiredException;
+use App\Spotify\RejectedRequestException;
 use App\Spotify\SpotifyAuthException;
 use App\Spotify\SpotifyException;
 use App\Spotify\SpotifyPlayer;
@@ -105,11 +106,11 @@ class PlaybackSynchronizer
         $playback->error = null;
 
         $this->releaseStaleLock($event);
-        $pushed = $this->pushNextIfDue($event, $snapshot);
+        $queueChanged = $this->pushNextIfDue($event, $snapshot);
 
         $this->em->flush();
 
-        if ($trackChanged || $pushed) {
+        if ($trackChanged || $queueChanged) {
             $this->queue->broadcast($event);
         } else {
             $this->realtime->publish($event, 'playback', [
@@ -171,6 +172,7 @@ class PlaybackSynchronizer
         }
     }
 
+    /** @return bool whether the queue changed */
     private function pushNextIfDue(Event $event, PlaybackSnapshot $snapshot): bool
     {
         if (EventStatus::Live !== $event->getStatus() || !$snapshot->isPlaying) {
@@ -192,11 +194,22 @@ class PlaybackSynchronizer
         }
 
         try {
-            $this->player->enqueue($event->getHost(), $next->getTrack()->uri(), $event->getSpotifyDeviceId());
+            // The device just polled, not the stored one: the host may have switched speakers since
+            $this->player->enqueue($event->getHost(), $next->getTrack()->uri(), $snapshot->deviceId ?? $event->getSpotifyDeviceId());
         } catch (PremiumRequiredException) {
             $this->fail($event, 'premium_required');
 
             return false;
+        } catch (RejectedRequestException $e) {
+            // Retrying would block the whole queue behind a track Spotify will never play (removed from the catalogue…)
+            $next->reject();
+            $this->logger->warning('Spotify refused the next track, skipped', [
+                'event' => (string) $event->getId(),
+                'track' => $next->getTrack()->spotifyId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return true;
         } catch (SpotifyException $e) {
             $this->logger->error('Unable to push the next track to Spotify', [
                 'event' => (string) $event->getId(),

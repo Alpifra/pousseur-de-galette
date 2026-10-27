@@ -11,6 +11,7 @@ use App\Repository\QueueItemRepository;
 use App\Service\PlaybackSynchronizer;
 use App\Spotify\NoActiveDeviceException;
 use App\Spotify\PremiumRequiredException;
+use App\Spotify\RejectedRequestException;
 use App\Spotify\SpotifyPlayer;
 use App\Tests\Double\FakePlayer;
 
@@ -101,6 +102,34 @@ class PlaybackSynchronizerTest extends DomainTestCase
         $this->sync->tick($event);
 
         self::assertSame(['spotify:track:next1'], $this->player->enqueued);
+    }
+
+    public function testATrackRefusedBySpotifyIsSkipped(): void
+    {
+        $event = $this->connectedEvent();
+        $refused = $this->pending($event, 'gone1');
+        $this->pending($event, 'next2');
+        $this->player->snapshot = $this->playing($this->track('live1'), 195_000);
+        $this->player->enqueueFailure = new RejectedRequestException('Spotify API error 404 on POST /me/player/queue.');
+
+        $this->sync->tick($event);
+        $this->player->enqueueFailure = null;
+        $this->sync->tick($event);
+
+        self::assertSame(QueueItemStatus::Rejected, $refused->getStatus());
+        self::assertSame(['spotify:track:next2'], $this->player->enqueued);
+    }
+
+    public function testTheTrackIsPushedToTheDeviceCurrentlyPlaying(): void
+    {
+        $event = $this->connectedEvent();
+        $event->setSpotifyDeviceId('previous-speaker');
+        $this->pending($event, 'next1');
+        $this->player->snapshot = $this->playing($this->track('live1'), 195_000);
+
+        $this->sync->tick($event);
+
+        self::assertSame(['device-1'], $this->player->devices);
     }
 
     public function testTheLockedTrackBecomesTheCurrentOne(): void

@@ -79,7 +79,13 @@ class SpotifyClient
         }
 
         $this->logger->error('Spotify API error', ['method' => $method, 'path' => $path, 'status' => $status, 'body' => $content]);
+        $message = \sprintf('Spotify API error %d on %s %s.', $status, $method, $path);
 
-        throw new SpotifyException(\sprintf('Spotify API error %d on %s %s.', $status, $method, $path));
+        // A vanished device also answers 404: that one is transient and must not be blamed on the request
+        if (\in_array($status, [400, 404], true) && !str_contains(strtolower($content), 'device')) {
+            throw new RejectedRequestException($message);
+        }
+
+        throw new SpotifyException($message);
     }
 }
