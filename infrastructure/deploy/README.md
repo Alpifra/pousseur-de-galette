@@ -38,7 +38,9 @@ Chaque push sur `main` dont la CI passe déclenche le workflow `Deploy` (relanç
 7. **Worker Messenger** : `crontab -e` sur le serveur, puis ajouter :
    ```
    * * * * * cd ~/sites/pousseur-de-galette/current && /opt/php8.5/bin/php bin/console messenger:consume async --time-limit=55 --memory-limit=256M >> ~/sites/pousseur-de-galette/shared/worker.log 2>&1
+   * * * * * cd ~/sites/pousseur-de-galette/current && flock -n /tmp/pdg-playback.lock /opt/php8.5/bin/php bin/console app:playback:run --duration=55 >> ~/sites/pousseur-de-galette/shared/playback.log 2>&1
    ```
+   La seconde ligne est la boucle de lecture « juste à temps ». `flock` garantit qu'un seul passage tourne à la fois : deux boucles simultanées pourraient envoyer deux titres à Spotify.
 
 ## Opérations courantes
 

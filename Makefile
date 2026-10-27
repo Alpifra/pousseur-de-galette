@@ -40,8 +40,8 @@ logs: ## Show live logs
 sh: ## Connect to the PHP FPM container
 	@$(PHP_CONT) sh
 
-worker: ## Restart the Messenger worker (it keeps the old code in memory)
-	@$(DOCKER_COMP) restart worker
+worker: ## Restart the Messenger worker and the playback loop (they keep the old code in memory)
+	@$(DOCKER_COMP) restart worker playback
 
 psql: ## Connect to the database with the PostgreSQL client
 	@$(DB_CONT) psql -U galette galette

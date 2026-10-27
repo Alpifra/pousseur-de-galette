@@ -59,7 +59,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Gestion des titres « hors file » (ajoutés directement dans Spotify)
 - [x] Gestion pause / appareil déconnecté / token expiré
 - [x] Gestion de la file vide
-- [x] Reprise après redémarrage du serveur (tout l'état vit en base, le Scheduler relance la boucle)
+- [x] Reprise après redémarrage du serveur : tout l'état vit en base ; la boucle `app:playback:run` tourne dans le service Docker `playback` en local, et via un cron minute protégé par `flock` en prod
 
 ## Phase 5 — Temps réel
 - [x] Canal par événement
@@ -136,3 +136,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 19/10/2026 | Conditions Spotify vérifiées (§ 7.5 de `presentation.md`) : l'extension de quota est hors de portée (250 000 MAU), donc 5 comptes organisateurs maximum ; les convives ne comptent pas, ils ne s'authentifient jamais. L'app étant *non-streaming*, vendre l'accès reste autorisé, mais la charte impose le logo Spotify et un lien de retour vers chaque titre. |
 | 27/10/2026 | En local, l'app passe sur les ports standards : `https://127.0.0.1` (le port 80 redirige vers 443). Elle reste en HTTPS, car le cookie convive est `Secure`. Redirect URI Spotify locale : `https://127.0.0.1/api/spotify/callback`. |
 | 27/10/2026 | Attribution Spotify limitée à l'emplacement de la maquette : logo sur la carte « En cours », lien dans la fiche de proposition. La file, la recherche et « Mes galettes » n'affichent pas le logo, bien qu'une lecture stricte de la charte le demande partout où des pochettes sont affichées. |
+| 27/10/2026 | La boucle de lecture n'était lancée nulle part : le Scheduler annoncé est vide, et le worker ne consomme que la file `async`. Elle a désormais son propre service Docker `playback`, et une ligne de cron en prod. `flock` y empêche deux passages simultanés, qui pourraient envoyer deux titres à Spotify. |

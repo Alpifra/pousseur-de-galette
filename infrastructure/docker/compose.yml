@@ -55,6 +55,10 @@ services:
         <<: *php
         command: php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M -vv
 
+    playback:
+        <<: *php
+        command: php bin/console app:playback:run -v
+
     mercure:
         image: dunglas/mercure
         restart: unless-stopped
