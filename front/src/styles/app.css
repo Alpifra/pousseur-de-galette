@@ -6,6 +6,7 @@
   max-width: var(--screen-max);
   margin: 0 auto;
   overflow-x: hidden;
+  isolation: isolate;
 }
 
 .screen--centered {
@@ -15,6 +16,7 @@
 .glow {
   position: absolute;
   inset: 0 0 auto 0;
+  z-index: -1;
   height: 380px;
   pointer-events: none;
 }
