@@ -18,11 +18,11 @@ class HostController
     ) {
     }
 
-    /** Handled by the json_login firewall; the body is never reached. */
+    /** json_login authenticates first and, without a success handler, lets the request reach this action. */
     #[Route('/login', name: 'api_host_login', methods: ['POST'])]
     public function login(): JsonResponse
     {
-        throw DomainException::invalidSession();
+        return $this->me();
     }
 
     /** Handled by the logout listener. */
