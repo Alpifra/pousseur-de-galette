@@ -22,3 +22,8 @@
 		reverse_proxy front:5173
 	}
 }
+
+# Spotify refuses localhost in redirect URIs, and cookies are per host: everything lives on the loopback IP
+localhost {
+	redir https://{$SERVER_NAME:127.0.0.1}{uri}
+}
