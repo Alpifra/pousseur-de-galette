@@ -114,6 +114,10 @@ export interface VoteResponse {
   snapshot: PersonalSnapshot
 }
 
+export interface WithdrawResponse {
+  snapshot: PersonalSnapshot
+}
+
 export interface MyProposalsResponse {
   pseudo: string
   pending: QueueItemView[]

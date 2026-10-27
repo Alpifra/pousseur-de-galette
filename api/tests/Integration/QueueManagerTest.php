@@ -202,6 +202,70 @@ class QueueManagerTest extends DomainTestCase
         $this->queue->propose($guest, 't1');
     }
 
+    public function testTheAuthorCannotVoteOnTheirOwnProposal(): void
+    {
+        $this->fakeCatalog(['t1' => $this->track('t1')]);
+        $event = $this->createEvent();
+        $author = $this->createGuest($event, 'Marion');
+        $item = $this->queue->propose($author, 't1')['item'];
+
+        $this->expectExceptionObject(DomainException::ownProposal());
+        $this->queue->vote($author, $item, -1);
+    }
+
+    public function testProposingYourOwnTrackAgainChangesNothing(): void
+    {
+        $this->fakeCatalog(['t1' => $this->track('t1')]);
+        $event = $this->createEvent();
+        $author = $this->createGuest($event, 'Marion');
+        $this->queue->propose($author, 't1');
+
+        $result = $this->queue->propose($author, 't1');
+
+        self::assertTrue($result['alreadyQueued']);
+        self::assertSame(1, $result['item']->getScore());
+    }
+
+    public function testTheAuthorCanWithdrawTheirProposalAndGetTheirQuotaBack(): void
+    {
+        $this->fakeCatalog(['t1' => $this->track('t1'), 't2' => $this->track('t2')]);
+        $event = $this->createEvent();
+        $event->getSettings()->maxPendingPerGuest = 1;
+        $this->em->flush();
+        $author = $this->createGuest($event, 'Marion');
+        $item = $this->queue->propose($author, 't1')['item'];
+
+        $this->queue->withdraw($author, $item);
+
+        self::assertSame(QueueItemStatus::Removed, $item->getStatus());
+        self::assertSame(QueueItemStatus::Pending, $this->queue->propose($author, 't2')['item']->getStatus());
+    }
+
+    public function testOnlyTheAuthorCanWithdrawAProposal(): void
+    {
+        $this->fakeCatalog(['t1' => $this->track('t1')]);
+        $event = $this->createEvent();
+        $author = $this->createGuest($event, 'Marion');
+        $item = $this->queue->propose($author, 't1')['item'];
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('Titre introuvable.');
+        $this->queue->withdraw($this->createGuest($event, 'Thomas'), $item);
+    }
+
+    public function testALockedProposalCannotBeWithdrawn(): void
+    {
+        $this->fakeCatalog(['t1' => $this->track('t1')]);
+        $event = $this->createEvent();
+        $author = $this->createGuest($event, 'Marion');
+        $item = $this->queue->propose($author, 't1')['item'];
+        $item->lock();
+        $this->em->flush();
+
+        $this->expectExceptionObject(DomainException::itemLocked());
+        $this->queue->withdraw($author, $item);
+    }
+
     public function testAGuestCannotVoteOnAnotherEventQueue(): void
     {
         $this->fakeCatalog(['t1' => $this->track('t1')]);

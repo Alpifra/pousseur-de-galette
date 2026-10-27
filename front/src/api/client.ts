@@ -6,6 +6,7 @@ import type {
   SearchResponse,
   SessionResponse,
   VoteResponse,
+  WithdrawResponse,
 } from './types.ts'
 
 /** Mirrors App\Exception\DomainException: the code drives what the guest is told. */
@@ -74,5 +75,6 @@ export const api = {
   propose: (spotifyId: string) => request<ProposalResponse>('POST', '/api/proposals', { spotifyId }),
   vote: (itemId: string, value: -1 | 0 | 1) =>
     request<VoteResponse>('PUT', `/api/items/${encodeURIComponent(itemId)}/vote`, { value }),
+  withdraw: (itemId: string) => request<WithdrawResponse>('DELETE', `/api/items/${encodeURIComponent(itemId)}`),
   myProposals: () => request<MyProposalsResponse>('GET', '/api/my-proposals'),
 }

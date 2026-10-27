@@ -1,10 +1,11 @@
-import { useRef } from 'react'
-import type { PersonalSnapshot } from '../api/types.ts'
+import { useRef, useState } from 'react'
+import type { PersonalSnapshot, QueueItemView } from '../api/types.ts'
 import { CurrentTrack } from '../components/CurrentTrack.tsx'
 import { Logo, SearchIcon, Warning } from '../components/Icons.tsx'
 import { QueueRow } from '../components/QueueRow.tsx'
 import { QueueSkeleton } from '../components/Skeletons.tsx'
 import { UpNext } from '../components/UpNext.tsx'
+import { WithdrawSheet } from '../components/WithdrawSheet.tsx'
 import { initial, plural } from '../lib/format.ts'
 import { useFlip } from '../lib/useFlip.ts'
 import type { ConnectionState } from '../lib/useRealtime.ts'
@@ -17,6 +18,7 @@ interface Props {
   onSearch: () => void
   onMine: () => void
   onVote: (itemId: string, value: -1 | 0 | 1) => void
+  onWithdraw: (itemId: string) => Promise<void>
 }
 
 const CONNECTION_LABEL: Record<ConnectionState, string> = {
@@ -25,8 +27,9 @@ const CONNECTION_LABEL: Record<ConnectionState, string> = {
   offline: 'Hors ligne',
 }
 
-export function QueueScreen({ snapshot, connection, online, error, onSearch, onMine, onVote }: Props) {
+export function QueueScreen({ snapshot, connection, online, error, onSearch, onMine, onVote, onWithdraw }: Props) {
   const listRef = useRef<HTMLOListElement>(null)
+  const [withdrawing, setWithdrawing] = useState<QueueItemView | null>(null)
   const pending = snapshot?.queue.filter((item) => item.status === 'pending') ?? []
   const locked = snapshot?.queue.find((item) => item.status !== 'pending') ?? null
   const me = snapshot?.me ?? null
@@ -128,6 +131,7 @@ export function QueueScreen({ snapshot, connection, online, error, onSearch, onM
                   votable={live && !item.locked}
                   allowDownvotes={snapshot.event.settings.allowDownvotes}
                   onVote={(value) => onVote(item.id, value)}
+                  onWithdraw={() => setWithdrawing(item)}
                 />
               ))}
             </ol>
@@ -141,6 +145,14 @@ export function QueueScreen({ snapshot, connection, online, error, onSearch, onM
           {live ? 'Proposer une galette' : 'Propositions en pause'}
         </button>
       </div>
+
+      {withdrawing !== null && (
+        <WithdrawSheet
+          item={withdrawing}
+          onCancel={() => setWithdrawing(null)}
+          onConfirm={() => onWithdraw(withdrawing.id).finally(() => setWithdrawing(null))}
+        />
+      )}
     </div>
   )
 }

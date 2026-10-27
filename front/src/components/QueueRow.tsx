@@ -10,9 +10,10 @@ interface Props {
   votable: boolean
   allowDownvotes: boolean
   onVote: (value: -1 | 0 | 1) => void
+  onWithdraw: () => void
 }
 
-export function QueueRow({ item, myVote, mine, votable, allowDownvotes, onVote }: Props) {
+export function QueueRow({ item, myVote, mine, votable, allowDownvotes, onVote, onWithdraw }: Props) {
   return (
     <li className={`row${mine ? ' row--mine' : ''}`} data-flip-id={item.id}>
       <span className="row__rank">{item.rank}</span>
@@ -36,7 +37,9 @@ export function QueueRow({ item, myVote, mine, votable, allowDownvotes, onVote }
         myVote={myVote}
         disabled={!votable}
         allowDownvotes={allowDownvotes}
+        mine={mine}
         onVote={onVote}
+        onWithdraw={onWithdraw}
       />
     </li>
   )

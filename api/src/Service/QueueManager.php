@@ -39,7 +39,7 @@ class QueueManager
 
         $existing = $this->items->findUpcomingByTrack($event, $spotifyId);
         if (null !== $existing) {
-            if ($existing->getStatus()->isVotable()) {
+            if ($existing->getStatus()->isVotable() && !$this->isAuthor($guest, $existing)) {
                 $this->castVote($guest, $existing, 1);
             }
 
@@ -103,6 +103,29 @@ class QueueManager
         return ['item' => $item, 'snapshot' => $this->broadcast($event)];
     }
 
+    /**
+     * The author takes back their own proposal, which frees a slot in their quota.
+     *
+     * @return array<string, mixed> the snapshot that was published
+     */
+    public function withdraw(Guest $guest, QueueItem $item): array
+    {
+        $event = $guest->getEvent();
+        if (!$item->getEvent()->getId()->equals($event->getId()) || !$this->isAuthor($guest, $item)) {
+            throw DomainException::notFound('Titre');
+        }
+
+        $this->assertContributionsAllowed($event);
+        if (!$item->getStatus()->isVotable()) {
+            throw DomainException::itemLocked();
+        }
+
+        $item->remove();
+        $this->em->flush();
+
+        return $this->broadcast($event);
+    }
+
     public function remove(QueueItem $item): void
     {
         $item->remove();
@@ -138,6 +161,11 @@ class QueueManager
             throw DomainException::itemLocked();
         }
 
+        // Proposing already is the author's upvote: they withdraw the track instead of voting on it
+        if ($this->isAuthor($guest, $item)) {
+            throw DomainException::ownProposal();
+        }
+
         if ($value < 0 && !$item->getEvent()->getSettings()->allowDownvotes) {
             throw DomainException::downvotesDisabled();
         }
@@ -162,6 +190,11 @@ class QueueManager
         if (!$item->isPinned() && $item->getScore() <= $threshold) {
             $item->reject();
         }
+    }
+
+    private function isAuthor(Guest $guest, QueueItem $item): bool
+    {
+        return $item->getProposedBy()?->getId()->equals($guest->getId()) ?? false;
     }
 
     private function assertContributionsAllowed(Event $event): void

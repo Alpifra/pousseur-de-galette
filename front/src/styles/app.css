@@ -55,6 +55,11 @@
   background: var(--accent-hover);
 }
 
+.btn--danger {
+  background: var(--danger);
+  color: var(--on-accent);
+}
+
 .btn--ghost {
   height: 48px;
   font-size: 15px;
@@ -721,6 +726,10 @@
 }
 
 .vote--down[aria-pressed='true'] {
+  color: var(--danger);
+}
+
+.vote--withdraw:not(:disabled) {
   color: var(--danger);
 }
 

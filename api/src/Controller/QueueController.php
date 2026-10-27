@@ -76,6 +76,15 @@ class QueueController
         ]);
     }
 
+    #[Route('/api/items/{id}', name: 'api_withdraw', methods: ['DELETE'])]
+    public function withdraw(string $id, Request $request): JsonResponse
+    {
+        $guest = $this->session->require($request);
+        $snapshot = $this->queue->withdraw($guest, $this->item($id));
+
+        return new JsonResponse(['snapshot' => $this->serializer->personalize($snapshot, $guest)]);
+    }
+
     /** "Mes galettes": what this guest proposed, grouped by outcome. */
     #[Route('/api/my-proposals', name: 'api_my_proposals', methods: ['GET'])]
     public function myProposals(Request $request): JsonResponse

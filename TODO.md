@@ -89,7 +89,7 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Affichage / téléchargement du QR code
 
 ## Phase 8 — Qualité et mise en production
-- [~] Tests unitaires (classement, règles de proposition, votes) : 41 tests / 119 assertions
+- [~] Tests unitaires (classement, règles de proposition, votes) : 48 tests / 138 assertions
 - [~] Tests d'intégration (client Spotify mocké, worker) : parcours convive HTTP, domaine et worker de lecture couverts ; reste la couche Spotify elle-même (client, OAuth, rafraîchissement)
 - [ ] Tests E2E des parcours convive et hôte
 - [ ] Test de charge (300 convives simultanés)
@@ -138,3 +138,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 27/10/2026 | Attribution Spotify limitée à l'emplacement de la maquette : logo sur la carte « En cours », lien dans la fiche de proposition. La file, la recherche et « Mes galettes » n'affichent pas le logo, bien qu'une lecture stricte de la charte le demande partout où des pochettes sont affichées. |
 | 27/10/2026 | La boucle de lecture n'était lancée nulle part : le Scheduler annoncé est vide, et le worker ne consomme que la file `async`. Elle a désormais son propre service Docker `playback`, et une ligne de cron en prod. `flock` y empêche deux passages simultanés, qui pourraient envoyer deux titres à Spotify. |
 | 27/10/2026 | Accès depuis un téléphone du même Wi-Fi (`https://<IP du Mac>`) : Caddy sert aussi les hôtes inconnus avec le certificat de `127.0.0.1`, et l'URL publique du hub Mercure devient relative pour fonctionner quelle que soit l'origine. La connexion Spotify de l'organisateur reste à faire sur `127.0.0.1`, seule redirect URI déclarée. |
+| 27/10/2026 | Un convive ne vote plus sur sa propre galette : la proposer compte déjà comme son vote pour, et un vote contre n'avait pas de sens. À la place du 👎, une corbeille lui permet de la retirer après confirmation, tant qu'elle n'est pas verrouillée ; sa place dans le quota se libère. Le serveur refuse tout vote de l'auteur (`own_proposal`). |

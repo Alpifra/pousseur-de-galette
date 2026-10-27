@@ -51,7 +51,7 @@ class GuestJourneyTest extends WebTestCase
         $this->em->getConnection()->executeStatement('TRUNCATE host, event, guest, queue_item, vote CASCADE');
     }
 
-    public function testAGuestJoinsProposesVotesAndFindsTheirProposals(): void
+    public function testAGuestJoinsProposesFindsAndWithdrawsTheirProposals(): void
     {
         $event = $this->createLiveEvent();
 
@@ -76,14 +76,20 @@ class GuestJourneyTest extends WebTestCase
 
         $itemId = $proposal['item']['id'];
         $vote = $this->json('PUT', \sprintf('/api/items/%s/vote', $itemId), ['value' => -1]);
-        self::assertResponseIsSuccessful();
-        self::assertSame(-1, $vote['item']['score']);
+        self::assertResponseStatusCodeSame(403);
+        self::assertSame('own_proposal', $vote['error']);
 
         $mine = $this->json('GET', '/api/my-proposals');
         self::assertResponseIsSuccessful();
         self::assertCount(1, $mine['pending']);
         self::assertSame(1, $mine['nextRank']);
         self::assertSame('Alex', $mine['pseudo']);
+
+        $withdrawal = $this->json('DELETE', \sprintf('/api/items/%s', $itemId));
+        self::assertResponseIsSuccessful();
+        self::assertSame([], $withdrawal['snapshot']['queue']);
+        self::assertSame(0, $withdrawal['snapshot']['me']['pendingCount']);
+        self::assertCount(1, $this->json('GET', '/api/my-proposals')['removed']);
 
         $session = $this->json('GET', '/api/session');
         self::assertSame('Alex', $session['guest']['pseudo']);

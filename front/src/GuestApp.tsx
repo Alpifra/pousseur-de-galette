@@ -121,6 +121,15 @@ export function GuestApp({ initial, onLeave }: Props) {
       })
   }
 
+  const withdraw = async (itemId: string) => {
+    try {
+      setSnapshot((await api.withdraw(itemId)).snapshot)
+      notify({ title: 'Galette retirée', text: 'Ta place dans le quota est libérée.' })
+    } catch (failure) {
+      handleFailure(failure)
+    }
+  }
+
   const propose = async (result: SearchResult) => {
     try {
       const response = await api.propose(result.spotifyId)
@@ -174,6 +183,7 @@ export function GuestApp({ initial, onLeave }: Props) {
           onSearch={() => setScreen('search')}
           onMine={() => setScreen('mine')}
           onVote={vote}
+          onWithdraw={withdraw}
         />
       )}
       {toast !== null && <Toast toast={toast} onDismiss={() => setToast(null)} />}
