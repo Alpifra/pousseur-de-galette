@@ -44,12 +44,17 @@ class SpotifyClient
         }
 
         if ($status >= 200 && $status < 300) {
-            if ('' === trim($content)) {
+            // Player commands answer 200 with a non-JSON body: the status alone confirms them
+            if ('GET' !== $method || '' === trim($content)) {
                 return null;
             }
 
-            /** @var array<string, mixed> $decoded */
-            $decoded = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+            try {
+                /** @var array<string, mixed> $decoded */
+                $decoded = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                throw new SpotifyException(\sprintf('Spotify API returned invalid JSON on %s %s.', $method, $path), 0, $e);
+            }
 
             return $decoded;
         }
