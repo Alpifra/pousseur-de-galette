@@ -14,7 +14,7 @@ x-php: &php
         - ../../api:/srv/app:rw,cached
     environment:
         APP_ENV: dev
-        DATABASE_URL: postgresql://${POSTGRES_USER:-galette}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-galette}?serverVersion=${POSTGRES_VERSION:-18}&charset=utf8
+        DATABASE_URL: mysql://${MARIADB_USER:-galette}:${MARIADB_PASSWORD:-password}@database:3306/${MARIADB_DATABASE:-galette}?serverVersion=${MARIADB_VERSION:-10.6}.0-MariaDB&charset=utf8mb4
         MERCURE_URL: http://mercure/.well-known/mercure
         # Relative: the same hub works whether the page was opened on the loopback or on the LAN IP
         MERCURE_PUBLIC_URL: /.well-known/mercure
@@ -77,16 +77,19 @@ services:
             - mercure_config:/config
 
     database:
-        image: postgres:${POSTGRES_VERSION:-18}-alpine
+        # Same major version as the Infomaniak production server
+        image: mariadb:${MARIADB_VERSION:-10.6}
         restart: unless-stopped
         environment:
-            POSTGRES_DB: ${POSTGRES_DB:-galette}
-            POSTGRES_USER: ${POSTGRES_USER:-galette}
-            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+            MARIADB_DATABASE: ${MARIADB_DATABASE:-galette}
+            MARIADB_USER: ${MARIADB_USER:-galette}
+            MARIADB_PASSWORD: ${MARIADB_PASSWORD:-password}
+            MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-root}
         volumes:
-            - database_data:/var/lib/postgresql
+            - mariadb_data:/var/lib/mysql
+            - ./db/init:/docker-entrypoint-initdb.d:ro
         ports:
-            - "${POSTGRES_PORT:-5433}:5432"
+            - "${MARIADB_PORT:-3307}:3306"
 
     front:
         image: node:24-alpine
@@ -105,5 +108,5 @@ volumes:
     caddy_config:
     mercure_data:
     mercure_config:
-    database_data:
+    mariadb_data:
     front_node_modules:

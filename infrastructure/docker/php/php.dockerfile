@@ -16,7 +16,7 @@ RUN install-php-extensions \
 		apcu \
 		intl \
 		opcache \
-		pdo_pgsql \
+		pdo_mysql \
 		sodium \
 		zip \
 	;

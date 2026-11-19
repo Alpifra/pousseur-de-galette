@@ -6,7 +6,9 @@ use App\Entity\Guest;
 use App\Entity\QueueItem;
 use App\Entity\Vote;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /** @extends ServiceEntityRepository<Vote> */
 class VoteRepository extends ServiceEntityRepository
@@ -36,11 +38,13 @@ class VoteRepository extends ServiceEntityRepository
 
         /** @var list<array{id: string, value: int}> $rows */
         $rows = $this->createQueryBuilder('v')
-            ->select('IDENTITY(v.queueItem) AS id', 'v.value')
+            // IDENTITY() would return the raw BINARY(16) column, a selected mapped field goes through UuidType
+            ->select('item.id AS id', 'v.value')
+            ->join('v.queueItem', 'item')
             ->andWhere('v.guest = :guest')
             ->andWhere('v.queueItem IN (:items)')
-            ->setParameter('guest', $guest)
-            ->setParameter('items', $items)
+            ->setParameter('guest', $guest->getId(), UuidType::NAME)
+            ->setParameter('items', array_map(static fn (QueueItem $item): string => $item->getId()->toBinary(), $items), ArrayParameterType::BINARY)
             ->getQuery()
             ->getArrayResult();
 

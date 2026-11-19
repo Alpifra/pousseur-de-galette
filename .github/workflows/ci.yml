@@ -19,12 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Start PHP and PostgreSQL
+      - name: Start PHP and MariaDB
         run: $COMPOSE up -d --build php database
 
       # Over TCP: during its init the image runs a temporary server reachable through the socket only
-      - name: Wait for PostgreSQL
-        run: timeout 60 sh -c "until $COMPOSE exec -T database pg_isready -h 127.0.0.1 -U galette --quiet; do sleep 1; done"
+      - name: Wait for MariaDB
+        run: timeout 60 sh -c "until $COMPOSE exec -T database mariadb-admin ping -h 127.0.0.1 -uroot -proot --silent; do sleep 1; done"
 
       - name: Install Composer dependencies
         run: $COMPOSE exec -T php composer install --prefer-dist --no-progress --no-interaction

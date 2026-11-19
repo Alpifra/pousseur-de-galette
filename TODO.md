@@ -17,14 +17,14 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [x] Initialiser le dépôt Git dédié au projet
 - [x] Initialiser le projet avec la stack retenue (`api/` Symfony + API Platform, `front/` React + TypeScript strict)
 - [x] Configurer lint, formatage, hooks pre-commit (PHPStan niv. 8, PHP-CS-Fixer, oxlint, hook `.githooks/pre-commit` activable avec `make hooks`)
-- [x] Mettre en place la base de données et l'ORM (PostgreSQL 18 + Doctrine)
+- [x] Mettre en place la base de données et l'ORM (MariaDB 10.6 + Doctrine, comme l'hébergement Infomaniak)
 - [x] Variables d'environnement : `api/.env` (DB, Mercure, Spotify, `APP_CRYPTO_KEY`, `SPOTIFY_MARKET`) ; à reporter dans `shared/.env.local` en prod
 - [~] Créer l'app sur le Spotify Developer Dashboard et déclarer les redirect URIs (app créée, identifiants en local ; redirect URI de prod à déclarer)
 - [x] Mettre en place les design tokens (couleurs, typo, espacements) issus des maquettes (`front/src/styles/tokens.css`)
-- [x] Mettre en place l'infra Docker (Caddy, PHP-FPM, worker Messenger, Mercure, PostgreSQL, Node) + Makefile
+- [x] Mettre en place l'infra Docker (Caddy, PHP-FPM, worker Messenger, Mercure, MariaDB, Node) + Makefile
 - [x] Mettre en place la CI (lint + tests) et le déploiement continu sur le VPS Infomaniak (`infrastructure/deploy/README.md`)
 - [ ] Renseigner les secrets GitHub (`SSH_HOST`, `SSH_USER`, `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`) et `shared/.env.local` sur le VPS
-- [ ] Créer la base PostgreSQL de prod et pointer le vhost `pdg.alexandrechauvin.fr` sur `current/public`
+- [ ] Créer la base MariaDB de prod et pointer le vhost `pdg.alexandrechauvin.fr` sur `current/public`
 - [ ] **Choisir la solution temps réel de prod** : pas de Docker sur le VPS, donc pas de hub Mercure conteneurisé. Pistes : binaire Mercure lancé en service, hub Mercure hébergé, ou service tiers (Pusher / Ably). Tant que ce point n'est pas tranché, le temps réel ne fonctionne qu'en local.
 - [ ] Vérifier que le VPS autorise un processus long pour le worker Messenger ; sinon s'appuyer sur le cron `messenger:consume --time-limit=55` (voir `infrastructure/deploy/README.md`)
 
@@ -140,3 +140,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 27/10/2026 | Accès depuis un téléphone du même Wi-Fi (`https://<IP du Mac>`) : Caddy sert aussi les hôtes inconnus avec le certificat de `127.0.0.1`, et l'URL publique du hub Mercure devient relative pour fonctionner quelle que soit l'origine. La connexion Spotify de l'organisateur reste à faire sur `127.0.0.1`, seule redirect URI déclarée. |
 | 27/10/2026 | Un convive ne vote plus sur sa propre galette : la proposer compte déjà comme son vote pour, et un vote contre n'avait pas de sens. À la place du 👎, une corbeille lui permet de la retirer après confirmation, tant qu'elle n'est pas verrouillée ; sa place dans le quota se libère. Le serveur refuse tout vote de l'auteur (`own_proposal`). |
 | 28/10/2026 | `POST /me/player/queue` répond 200 avec un corps qui n'est pas du JSON. Le décodage échouait après l'envoi, avant le verrouillage : chaque passage renvoyait le même titre à Spotify, qui s'empilait dans sa file. Une commande de lecteur n'est plus jugée que sur son code HTTP ; un JSON invalide sur une lecture devient une `SpotifyException`, gérée comme les autres erreurs Spotify. |
+| 19/11/2026 | Passage de PostgreSQL 18 à MariaDB 10.6 : l'hébergement Infomaniak ne propose que MariaDB. Les UUID sont stockés en `BINARY(16)` : dans le QueryBuilder, un paramètre UUID doit être typé (`setParameter('event', $event->getId(), UuidType::NAME)`), et `IDENTITY()` renvoie l'octet brut, il faut sélectionner le champ `id` mappé. |

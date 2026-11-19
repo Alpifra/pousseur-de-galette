@@ -8,6 +8,7 @@ use App\Entity\QueueItem;
 use App\Enum\QueueItemStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /** @extends ServiceEntityRepository<QueueItem> */
 class QueueItemRepository extends ServiceEntityRepository
@@ -43,7 +44,7 @@ class QueueItemRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('q')
             ->andWhere('q.event = :event')
             ->andWhere('q.status = :status')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('status', $status)
             ->orderBy('q.lockedAt', 'DESC')
             ->setMaxResults(1)
@@ -58,7 +59,7 @@ class QueueItemRepository extends ServiceEntityRepository
             ->andWhere('q.event = :event')
             ->andWhere('q.track.spotifyId = :track')
             ->andWhere('q.status IN (:statuses)')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('track', $spotifyId)
             ->setParameter('statuses', QueueItemStatus::upcomingValues())
             ->setMaxResults(1)
@@ -72,7 +73,7 @@ class QueueItemRepository extends ServiceEntityRepository
             ->andWhere('q.event = :event')
             ->andWhere('q.track.spotifyId = :track')
             ->andWhere('q.playedAt IS NOT NULL')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('track', $spotifyId)
             ->orderBy('q.playedAt', 'DESC')
             ->setMaxResults(1)
@@ -86,7 +87,7 @@ class QueueItemRepository extends ServiceEntityRepository
             ->select('COUNT(q.id)')
             ->andWhere('q.proposedBy = :guest')
             ->andWhere('q.status = :status')
-            ->setParameter('guest', $guest)
+            ->setParameter('guest', $guest->getId(), UuidType::NAME)
             ->setParameter('status', QueueItemStatus::Pending)
             ->getQuery()
             ->getSingleScalarResult();
@@ -99,7 +100,7 @@ class QueueItemRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('q')
             ->andWhere('q.proposedBy = :guest')
-            ->setParameter('guest', $guest)
+            ->setParameter('guest', $guest->getId(), UuidType::NAME)
             ->orderBy('q.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -111,7 +112,7 @@ class QueueItemRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('q')
             ->andWhere('q.event = :event')
             ->andWhere('q.status = :status')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('status', QueueItemStatus::Played)
             ->orderBy('q.playedAt', 'DESC')
             ->setMaxResults($limit)
@@ -131,7 +132,7 @@ class QueueItemRepository extends ServiceEntityRepository
             ->select('q.track.spotifyId AS spotifyId', 'q.id AS id')
             ->andWhere('q.event = :event')
             ->andWhere('q.status IN (:statuses)')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('statuses', QueueItemStatus::upcomingValues())
             ->getQuery()
             ->getArrayResult();
@@ -156,7 +157,7 @@ class QueueItemRepository extends ServiceEntityRepository
             ->select('q.track.spotifyId AS spotifyId')
             ->andWhere('q.event = :event')
             ->andWhere('q.playedAt >= :since')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('since', new \DateTimeImmutable(\sprintf('-%d minutes', $replayDelayMinutes)))
             ->getQuery()
             ->getArrayResult();
@@ -169,7 +170,7 @@ class QueueItemRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('q')
             ->andWhere('q.event = :event')
             ->andWhere('q.status = :status')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('status', QueueItemStatus::Pending)
             ->orderBy('q.pinned', 'DESC')
             ->addOrderBy('q.score', 'DESC')

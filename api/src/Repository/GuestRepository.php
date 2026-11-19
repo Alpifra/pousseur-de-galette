@@ -6,6 +6,7 @@ use App\Entity\Event;
 use App\Entity\Guest;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 /** @extends ServiceEntityRepository<Guest> */
 class GuestRepository extends ServiceEntityRepository
@@ -33,7 +34,7 @@ class GuestRepository extends ServiceEntityRepository
             ->andWhere('g.event = :event')
             ->andWhere('g.lastSeenAt >= :since')
             ->andWhere('g.banned = false')
-            ->setParameter('event', $event)
+            ->setParameter('event', $event->getId(), UuidType::NAME)
             ->setParameter('since', $since)
             ->getQuery()
             ->getSingleScalarResult();

@@ -226,10 +226,10 @@ L'API Spotify permet d'**ajouter** un titre à la file, mais **pas d'en retirer 
 |---|---|
 | API | Symfony 8.1 + API Platform 5 (PHP 8.5) |
 | Front | React 19 + TypeScript + Vite |
-| Base de données | PostgreSQL 18 + Doctrine ORM |
+| Base de données | MariaDB 10.6 + Doctrine ORM |
 | Temps réel | Mercure (intégration native API Platform) |
 | Worker de lecture | Symfony Messenger + Scheduler |
-| Infra locale | Docker Compose : Caddy, PHP-FPM, worker, Mercure, PostgreSQL, Node |
+| Infra locale | Docker Compose : Caddy, PHP-FPM, worker, Mercure, MariaDB, Node |
 
 ### 8.2 bis Options étudiées initialement
 

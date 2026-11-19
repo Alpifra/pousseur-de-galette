@@ -19,7 +19,8 @@ class HostQrCodeTest extends WebTestCase
         /** @var EntityManagerInterface $em */
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $this->em = $em;
-        $this->em->getConnection()->executeStatement('TRUNCATE host, event, guest, queue_item, vote CASCADE');
+        // The ON DELETE CASCADE foreign keys empty every other table
+        $this->em->getConnection()->executeStatement('DELETE FROM host');
     }
 
     public function testTheHostDownloadsTheQrCodeOfTheirEvent(): void

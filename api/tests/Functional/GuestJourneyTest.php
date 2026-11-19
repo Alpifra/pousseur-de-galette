@@ -48,7 +48,8 @@ class GuestJourneyTest extends WebTestCase
         /** @var EntityManagerInterface $em */
         $em = $container->get(EntityManagerInterface::class);
         $this->em = $em;
-        $this->em->getConnection()->executeStatement('TRUNCATE host, event, guest, queue_item, vote CASCADE');
+        // The ON DELETE CASCADE foreign keys empty every other table
+        $this->em->getConnection()->executeStatement('DELETE FROM host');
     }
 
     public function testAGuestJoinsProposesFindsAndWithdrawsTheirProposals(): void

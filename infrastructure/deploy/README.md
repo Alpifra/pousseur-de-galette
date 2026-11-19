@@ -13,7 +13,7 @@ Chaque push sur `main` dont la CI passe déclenche le workflow `Deploy` (relanç
 ## Installation initiale (une seule fois)
 
 1. **Racine du site** (Manager Infomaniak) : `pdg.alexandrechauvin.fr` → `~/sites/pousseur-de-galette/current/public`, PHP 8.5, option « Forcer HTTPS ».
-2. **Base de données** : créer la base et son utilisateur.
+2. **Base de données** : créer une base MariaDB et son utilisateur. Dans `DATABASE_URL`, encoder le mot de passe pour l'URL puis doubler chaque `%` (le processeur `resolve:` de `doctrine.yaml` lit `%…%` comme un paramètre).
 3. **Secrets de prod**, sur le serveur :
    ```bash
    mkdir -p ~/sites/pousseur-de-galette/shared

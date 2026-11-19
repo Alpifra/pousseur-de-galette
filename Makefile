@@ -16,7 +16,7 @@ NPM      = $(FRONT_CONT) npm
 
 # Misc
 .DEFAULT_GOAL = help
-.PHONY        : help build up start down logs sh worker psql front-sh composer vendor sf cc analyse lint lint-php lint-front fix hooks db drop test-db test npm
+.PHONY        : help build up start down logs sh worker mariadb front-sh composer vendor sf cc analyse lint lint-php lint-front fix hooks db drop test-db test npm
 
 ## —— 🎵 🐳 Pousseur de Galette Makefile 🐳 🎵 ————————————————————————————————————————————
 help: ## Outputs this help screen
@@ -43,8 +43,8 @@ sh: ## Connect to the PHP FPM container
 worker: ## Restart the Messenger worker and the playback loop (they keep the old code in memory)
 	@$(DOCKER_COMP) restart worker playback
 
-psql: ## Connect to the database with the PostgreSQL client
-	@$(DB_CONT) psql -U galette galette
+mariadb: ## Connect to the database with the MariaDB client
+	@$(DB_CONT) mariadb -ugalette -ppassword galette
 
 front-sh: ## Connect to the front (Node) container
 	@$(FRONT_CONT) sh
