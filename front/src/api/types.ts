@@ -131,3 +131,54 @@ export type RealtimeMessage =
   | ({ type: 'queue' } & Snapshot)
   | { type: 'playback'; spotifyId: string | null; progressMs: number; durationMs: number; isPlaying: boolean }
   | { type: 'status'; status: EventStatus }
+
+export interface EventSettingsView {
+  allowDownvotes: boolean
+  rejectionThreshold: number
+  maxPendingPerGuest: number
+  replayDelayMinutes: number
+  blockExplicit: boolean
+  maxTrackDurationMs: number
+  lockLeadMs: number
+}
+
+export interface HostEventSummary {
+  id: string
+  name: string
+  status: EventStatus
+  joinCode: string
+  joinUrl: string
+  scheduledFor: string | null
+  createdAt: string
+}
+
+export interface HostMe {
+  id: string
+  email: string
+  spotify: { connected: boolean; premium: boolean | null }
+  events: HostEventSummary[]
+}
+
+export interface HostEventView {
+  id: string
+  name: string
+  status: EventStatus
+  joinCode: string
+  joinUrl: string
+  scheduledFor: string | null
+  device: string | null
+  settings: EventSettingsView
+}
+
+export interface HostDashboard {
+  event: HostEventView
+  snapshot: Snapshot
+  realtime: { hub: string | null; topic: string | null }
+}
+
+export interface HostEventUpdate {
+  name?: string
+  scheduledFor?: string | null
+  status?: EventStatus
+  settings?: Partial<EventSettingsView>
+}

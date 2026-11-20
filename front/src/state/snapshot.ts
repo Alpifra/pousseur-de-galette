@@ -10,10 +10,10 @@ export function mergeSnapshot(previous: PersonalSnapshot, incoming: Snapshot): P
   }
 }
 
-export function applyPlayback(
-  previous: PersonalSnapshot,
+export function applyPlayback<T extends Snapshot>(
+  previous: T,
   playback: { spotifyId: string | null; progressMs: number; durationMs: number; isPlaying: boolean },
-): PersonalSnapshot {
+): T {
   if (previous.current === null || previous.current.spotifyId !== playback.spotifyId) {
     return previous
   }
@@ -25,7 +25,7 @@ export function applyPlayback(
   }
 }
 
-export function applyStatus(previous: PersonalSnapshot, status: EventStatus): PersonalSnapshot {
+export function applyStatus<T extends Snapshot>(previous: T, status: EventStatus): T {
   return { ...previous, event: { ...previous.event, status } }
 }
 

@@ -1,5 +1,8 @@
 import type {
   EventSummary,
+  HostDashboard,
+  HostEventUpdate,
+  HostMe,
   MyProposalsResponse,
   PersonalSnapshot,
   ProposalResponse,
@@ -26,6 +29,11 @@ export class ApiError extends Error {
   static offline(): ApiError {
     return new ApiError('offline', 'Connexion perdue. Vérifie ton réseau.', 0)
   }
+}
+
+/** The firewall answers 401 itself, without the DomainException payload. */
+export function isUnauthenticated(failure: unknown): boolean {
+  return failure instanceof ApiError && (failure.status === 401 || failure.code === 'invalid_session')
 }
 
 async function request<T>(method: string, path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
@@ -77,4 +85,24 @@ export const api = {
     request<VoteResponse>('PUT', `/api/items/${encodeURIComponent(itemId)}/vote`, { value }),
   withdraw: (itemId: string) => request<WithdrawResponse>('DELETE', `/api/items/${encodeURIComponent(itemId)}`),
   myProposals: () => request<MyProposalsResponse>('GET', '/api/my-proposals'),
+}
+
+const hostEvent = (code: string) => `/api/host/events/${encodeURIComponent(code)}`
+
+export const hostApi = {
+  login: (email: string, password: string) => request<HostMe>('POST', '/api/host/login', { email, password }),
+  logout: () => request<unknown>('POST', '/api/host/logout'),
+  me: () => request<HostMe>('GET', '/api/host/me'),
+  createEvent: (name: string, scheduledFor: string | null) =>
+    request<HostDashboard>('POST', '/api/host/events', { name, scheduledFor }),
+  event: (code: string) => request<HostDashboard>('GET', hostEvent(code)),
+  updateEvent: (code: string, changes: HostEventUpdate) => request<HostDashboard>('PATCH', hostEvent(code), changes),
+  removeItem: (code: string, itemId: string) =>
+    request<HostDashboard>('DELETE', `${hostEvent(code)}/items/${encodeURIComponent(itemId)}`),
+  pinItem: (code: string, itemId: string, pinned: boolean) =>
+    request<HostDashboard>('PUT', `${hostEvent(code)}/items/${encodeURIComponent(itemId)}/pin`, { pinned }),
+  skip: (code: string) => request<void>('POST', `${hostEvent(code)}/skip`),
+  qrCodeUrl: (code: string) => `${hostEvent(code)}/qr.svg`,
+  disconnectSpotify: () => request<void>('POST', '/api/spotify/disconnect'),
+  connectSpotifyUrl: '/api/spotify/connect',
 }

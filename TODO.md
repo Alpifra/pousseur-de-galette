@@ -80,13 +80,13 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 - [ ] Relecture visuelle avec Alexandre sur mobile (parcours complet)
 
 ## Phase 7 — Interface organisateur
-- [ ] Inscription / connexion
-- [ ] Connexion du compte Spotify
-- [ ] Liste et création d'événements
-- [ ] Tableau de bord live : titre en cours, file, alertes
-- [ ] Modération : retirer, épingler, passer
-- [ ] Paramètres de l'événement
-- [ ] Affichage / téléchargement du QR code
+- [x] Connexion / déconnexion sur `/host` (pas d'inscription : comptes créés par `app:host:create`)
+- [x] Connexion du compte Spotify
+- [x] Liste et création d'événements
+- [x] Tableau de bord live : titre en cours, file, alertes
+- [x] Modération : retirer, épingler, passer
+- [x] Paramètres de l'événement
+- [x] Affichage / téléchargement du QR code
 
 ## Phase 8 — Qualité et mise en production
 - [~] Tests unitaires (classement, règles de proposition, votes) : 48 tests / 138 assertions
@@ -143,3 +143,4 @@ Légende : `[ ]` à faire · `[~]` en cours · `[x]` terminé · `[!]` bloqué
 | 19/11/2026 | Passage de PostgreSQL 18 à MariaDB 10.6 : l'hébergement Infomaniak ne propose que MariaDB. Les UUID sont stockés en `BINARY(16)` : dans le QueryBuilder, un paramètre UUID doit être typé (`setParameter('event', $event->getId(), UuidType::NAME)`), et `IDENTITY()` renvoie l'octet brut, il faut sélectionner le champ `id` mappé. |
 | 20/11/2026 | Hub temps réel maison (`hub/`) plutôt que Mercure : l'hébergement Infomaniak ne lance que des sites Node.js. Il couvre ce que l'app utilise du protocole (topics publics, abonnés anonymes, JWT de publication HS256, au format `authorization_details` de Mercure 0.20 comme `mercure.publish`), sans historique. Le même hub remplace `dunglas/mercure` en local. |
 | 20/11/2026 | Le site Node.js du hub est sur un autre serveur Infomaniak, sans utilisateur SSH possible : pas de déploiement par la CI, copie manuelle de `server.mjs` depuis la console du Manager. Infomaniak lance le site avec `npm start`, d'où un `package.json` serveur dont le script charge le `.env`. |
+| 20/11/2026 | Interface hôte sans inscription ni routeur : les comptes sont créés en ligne de commande (5 comptes max côté Spotify en mode dev), `Root.tsx` charge `HostApp` à la demande sur `/host*`. Seuls les titres en attente se modèrent : un titre verrouillé est déjà dans la file Spotify. |
