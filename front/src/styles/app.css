@@ -813,6 +813,10 @@
   color: var(--bg);
 }
 
+.search__input:focus-visible {
+  outline: none;
+}
+
 .search__clear {
   display: flex;
   align-items: center;
@@ -1353,6 +1357,11 @@
 
 .host__share .host__inline {
   align-self: stretch;
+}
+
+.host__share .host__inline .btn {
+  flex: 1;
+  min-width: 0;
 }
 
 .host__qr {
