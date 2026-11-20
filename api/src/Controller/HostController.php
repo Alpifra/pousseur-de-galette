@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Event;
 use App\Entity\Host;
 use App\Exception\DomainException;
 use App\Service\JoinLink;
@@ -47,13 +48,27 @@ class HostController
                 'connected' => $host->isSpotifyConnected(),
                 'premium' => null === $host->getSpotifyProduct() ? null : $host->isPremiumConfirmed(),
             ],
-            'events' => array_map(fn ($event) => [
+            'events' => array_map(fn (Event $event) => [
                 'id' => (string) $event->getId(),
                 'name' => $event->getName(),
                 'status' => $event->getStatus()->value,
                 'joinCode' => $event->getJoinCode(),
                 'joinUrl' => $this->links->url($event),
-            ], $host->getEvents()->toArray()),
+                'scheduledFor' => $event->getScheduledFor()?->format('Y-m-d'),
+                'createdAt' => $event->getCreatedAt()->format(\DATE_ATOM),
+            ], $this->newestFirst($host->getEvents()->toArray())),
         ]);
+    }
+
+    /**
+     * @param array<int, Event> $events
+     *
+     * @return list<Event>
+     */
+    private function newestFirst(array $events): array
+    {
+        usort($events, static fn (Event $a, Event $b) => $b->getCreatedAt() <=> $a->getCreatedAt());
+
+        return $events;
     }
 }

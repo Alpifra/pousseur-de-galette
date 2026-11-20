@@ -16,6 +16,7 @@ final class FakePlayer extends SpotifyPlayer
     /** @var list<string|null> */
     public array $devices = [];
     public ?\Throwable $enqueueFailure = null;
+    public int $skips = 0;
 
     public function __construct()
     {
@@ -38,5 +39,14 @@ final class FakePlayer extends SpotifyPlayer
 
         $this->enqueued[] = $trackUri;
         $this->devices[] = $deviceId;
+    }
+
+    public function next(Host $host, ?string $deviceId = null): void
+    {
+        if (null !== $this->failure) {
+            throw $this->failure;
+        }
+
+        ++$this->skips;
     }
 }
