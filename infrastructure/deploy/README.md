@@ -41,6 +41,21 @@ Chaque push sur `main` dont la CI passe déclenche le workflow `Deploy` (relanç
    * * * * * cd ~/sites/pousseur-de-galette/current && flock -n /tmp/pdg-playback.lock /opt/php8.5/bin/php bin/console app:playback:run --duration=55 >> ~/sites/pousseur-de-galette/shared/playback.log 2>&1
    ```
    La seconde ligne est la boucle de lecture « juste à temps ». `flock` garantit qu'un seul passage tourne à la fois : deux boucles simultanées pourraient envoyer deux titres à Spotify.
+8. **Hub temps réel** : l'hébergement ne peut pas faire tourner le binaire Mercure, le dossier `hub/` contient un petit hub compatible (Node, sans dépendance). Créer un site Node.js dans le Manager, sur son propre sous-domaine (`HUB_HOST`) :
+   ```bash
+   ssh <serveur> 'mkdir -p ~/sites/pousseur-de-galette-hub'
+   scp hub/server.mjs hub/package.json <serveur>:sites/pousseur-de-galette-hub/
+   ```
+   - Dossier d'exécution : `~/sites/pousseur-de-galette-hub`, sans commande de build.
+   - Commande de lancement : `node --env-file=.env server.mjs`, avec dans `.env` (`chmod 600`) :
+     ```
+     MERCURE_PUBLISHER_JWT_KEY=<même valeur que MERCURE_JWT_SECRET dans shared/.env.local>
+     MERCURE_CORS_ORIGINS=https://pdg.alexandrechauvin.fr
+     ```
+   - Port : celui attribué par le Manager, lu dans `PORT`.
+   - Dans `shared/.env.local`, `MERCURE_URL` et `MERCURE_PUBLIC_URL` pointent vers `https://HUB_HOST/.well-known/mercure`.
+
+   Le hub n'est pas déployé par la CI : après une modification de `hub/`, refaire le `scp` puis redémarrer le site depuis le Manager. Il ne garde aucun historique ; à chaque (re)connexion, le front recharge l'état complet.
 
 ## Opérations courantes
 

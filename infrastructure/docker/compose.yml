@@ -60,21 +60,18 @@ services:
         <<: *php
         command: php bin/console app:playback:run -v
 
+    # Same hub as in production (hub/), where the hosting cannot run the Mercure binary
     mercure:
-        image: dunglas/mercure
+        image: node:24-alpine
+        working_dir: /hub
+        command: node server.mjs
         restart: unless-stopped
         environment:
-            SERVER_NAME: ':80'
-            MERCURE_TRUSTED_ISSUERS: https://${SERVER_NAME:-127.0.0.1}
+            PORT: 80
             MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-            MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET:-!ChangeThisMercureHubJWTSecretKey!}
-            MERCURE_EXTRA_DIRECTIVES: |-
-                resource_identifier https://${SERVER_NAME:-127.0.0.1}
-                anonymous
-                cors_origins https://${SERVER_NAME:-127.0.0.1}
+            MERCURE_CORS_ORIGINS: https://${SERVER_NAME:-127.0.0.1}
         volumes:
-            - mercure_data:/data
-            - mercure_config:/config
+            - ../../hub:/hub:ro
 
     database:
         # Same major version as the Infomaniak production server
@@ -106,7 +103,5 @@ volumes:
     var:
     caddy_data:
     caddy_config:
-    mercure_data:
-    mercure_config:
     mariadb_data:
     front_node_modules:
