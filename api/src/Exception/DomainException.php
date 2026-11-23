@@ -74,6 +74,11 @@ class DomainException extends \RuntimeException
         return new self('downvotes_disabled', 'Les votes négatifs sont désactivés sur cette soirée.', 403);
     }
 
+    public static function downvoteLimit(int $max): self
+    {
+        return new self('downvote_limit', \sprintf('Tu as déjà %d votes contre en cours : annule-en un pour en donner un autre.', $max), 429, ['max' => $max]);
+    }
+
     public static function trackRejected(): self
     {
         return new self('track_rejected', 'Ce titre a été écarté de la file, il ne peut plus être proposé ce soir.', 409);

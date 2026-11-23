@@ -195,6 +195,39 @@ class QueueManagerTest extends DomainTestCase
         $this->queue->propose($this->createGuest($event, 'Yanis'), 't1');
     }
 
+    public function testAGuestHasALimitedNumberOfActiveDownvotes(): void
+    {
+        $this->fakeCatalog([
+            't1' => $this->track('t1'),
+            't2' => $this->track('t2'),
+            't3' => $this->track('t3'),
+        ]);
+        $event = $this->createEvent();
+        $event->getSettings()->maxActiveDownvotesPerGuest = 2;
+        $this->em->flush();
+        $author = $this->createGuest($event, 'Marion');
+        $critic = $this->createGuest($event, 'Thomas');
+        $first = $this->queue->propose($author, 't1')['item'];
+        $second = $this->queue->propose($author, 't2')['item'];
+        $third = $this->queue->propose($author, 't3')['item'];
+
+        $this->queue->vote($critic, $first, -1);
+        $this->queue->vote($critic, $second, -1);
+        $this->queue->vote($critic, $second, -1);
+
+        try {
+            $this->queue->vote($critic, $third, -1);
+            self::fail('A third downvote should have been refused.');
+        } catch (DomainException $e) {
+            self::assertSame('downvote_limit', $e->errorCode);
+        }
+
+        $first->markPlayed();
+        $this->em->flush();
+        $this->queue->vote($critic, $third, -1);
+        self::assertSame(0, $third->getScore());
+    }
+
     public function testALockedTrackCannotBeVotedOn(): void
     {
         $this->fakeCatalog(['t1' => $this->track('t1')]);

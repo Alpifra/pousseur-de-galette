@@ -38,6 +38,7 @@ class HostEventController
     private const SETTINGS = [
         'allowDownvotes' => 'bool',
         'rejectionThreshold' => 'int',
+        'maxActiveDownvotesPerGuest' => 'int',
         'maxPendingPerGuest' => 'int',
         'replayDelayMinutes' => 'int',
         'blockExplicit' => 'bool',

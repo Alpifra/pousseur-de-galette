@@ -17,6 +17,10 @@ class EventSettings
     #[Assert\LessThan(0)]
     public int $rejectionThreshold = -5;
 
+    #[ORM\Column(options: ['default' => 3])]
+    #[Assert\Positive]
+    public int $maxActiveDownvotesPerGuest = 3;
+
     #[ORM\Column(options: ['default' => 5])]
     #[Assert\Positive]
     #[Groups(['event:read'])]

@@ -116,6 +116,7 @@ Lors d'un mariage, d'un anniversaire ou d'une soirée privée, la musique est so
 ### 6.2 Votes
 - Un convive = un vote par titre (👍, 👎 ou neutre). Il peut changer d'avis tant que le titre n'est pas verrouillé.
 - **Seuil de rejet** : si le score atteint une valeur paramétrable (ex. −5), le titre est retiré automatiquement.
+- Un convive ne peut avoir qu'un nombre limité de 👎 **en cours** sur des titres en attente (paramétrable, ex. 3). Au-delà, son vote est refusé avec un message d'erreur ; une place se libère quand il annule ou change un 👎, ou quand le titre quitte la file.
 
 ### 6.3 Propositions
 - Un titre déjà présent dans la file ne peut pas être reproposé : la tentative devient un upvote.
@@ -129,6 +130,7 @@ Lors d'un mariage, d'un anniversaire ou d'une soirée privée, la musique est so
 |---|---|
 | Autoriser les downvotes | Oui |
 | Seuil de rejet automatique | −5 |
+| Votes contre en cours max / convive | 3 |
 | Propositions en attente max / convive | 5 |
 | Délai avant de rejouer un titre | 120 min |
 | Bloquer les titres explicites | Non |

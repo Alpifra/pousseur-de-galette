@@ -23,6 +23,7 @@ interface NumberField {
 const NUMBER_FIELDS: NumberField[] = [
   { key: 'maxPendingPerGuest', label: 'Galettes en attente par convive', hint: "Au-delà, il doit attendre qu'une des siennes passe.", unit: 1, min: 1, max: 50 },
   { key: 'rejectionThreshold', label: 'Retrait automatique à un score de', hint: "Un titre épinglé n'est jamais retiré.", unit: 1, min: -100, max: -1 },
+  { key: 'maxActiveDownvotesPerGuest', label: 'Votes contre en cours par convive', hint: 'Au-delà, il doit en annuler un ou attendre que le titre passe.', unit: 1, min: 1, max: 50 },
   { key: 'replayDelayMinutes', label: 'Délai avant de rejouer un titre (min)', hint: "0 pour l'autoriser tout de suite.", unit: 1, min: 0, max: 1440 },
   { key: 'maxTrackDurationMs', label: "Durée maximale d'un titre (min)", hint: 'Évite les versions de 20 minutes.', unit: 60_000, min: 1, max: 60 },
   { key: 'lockLeadMs', label: 'Envoi du titre suivant à Spotify (s avant la fin)', hint: 'Entre 5 et 60 s. Le titre est verrouillé à ce moment-là.', unit: 1_000, min: 5, max: 60 },

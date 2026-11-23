@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Guest;
 use App\Entity\QueueItem;
 use App\Entity\Vote;
+use App\Enum\QueueItemStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -21,6 +22,23 @@ class VoteRepository extends ServiceEntityRepository
     public function findOneFor(QueueItem $item, Guest $guest): ?Vote
     {
         return $this->findOneBy(['queueItem' => $item, 'guest' => $guest]);
+    }
+
+    /** Downvotes of a guest on tracks still waiting in the queue. */
+    public function countActiveDownvotes(Guest $guest): int
+    {
+        $count = $this->createQueryBuilder('v')
+            ->select('COUNT(v.id)')
+            ->join('v.queueItem', 'item')
+            ->andWhere('v.guest = :guest')
+            ->andWhere('v.value < 0')
+            ->andWhere('item.status = :status')
+            ->setParameter('guest', $guest->getId(), UuidType::NAME)
+            ->setParameter('status', QueueItemStatus::Pending)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) $count;
     }
 
     /**

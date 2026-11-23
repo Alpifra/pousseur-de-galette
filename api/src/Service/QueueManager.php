@@ -176,6 +176,13 @@ class QueueManager
 
         $vote = $this->votes->findOneFor($item, $guest);
 
+        if ($value < 0 && ($vote?->getValue() ?? 0) >= 0) {
+            $max = $item->getEvent()->getSettings()->maxActiveDownvotesPerGuest;
+            if ($this->votes->countActiveDownvotes($guest) >= $max) {
+                throw DomainException::downvoteLimit($max);
+            }
+        }
+
         if (0 === $value) {
             if (null !== $vote) {
                 $item->getVotes()->removeElement($vote);

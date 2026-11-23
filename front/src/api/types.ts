@@ -135,6 +135,7 @@ export type RealtimeMessage =
 export interface EventSettingsView {
   allowDownvotes: boolean
   rejectionThreshold: number
+  maxActiveDownvotesPerGuest: number
   maxPendingPerGuest: number
   replayDelayMinutes: number
   blockExplicit: boolean
