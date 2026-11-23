@@ -5,7 +5,8 @@
   min-height: 100dvh;
   max-width: var(--screen-max);
   margin: 0 auto;
-  overflow-x: hidden;
+  /* hidden would turn .screen into a scroll container that never scrolls, and break position: sticky */
+  overflow-x: clip;
   isolation: isolate;
 }
 
