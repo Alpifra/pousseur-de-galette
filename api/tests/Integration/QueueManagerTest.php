@@ -177,6 +177,24 @@ class QueueManagerTest extends DomainTestCase
         self::assertSame([], $this->items->findRanked($event));
     }
 
+    public function testARejectedTrackCannotBeProposedAgain(): void
+    {
+        $this->fakeCatalog(['t1' => $this->track('t1')]);
+        $event = $this->createEvent();
+        $event->getSettings()->rejectionThreshold = -1;
+        $this->em->flush();
+        $author = $this->createGuest($event, 'Marion');
+        $item = $this->queue->propose($author, 't1')['item'];
+
+        foreach (['Thomas', 'Chloé'] as $pseudo) {
+            $this->queue->vote($this->createGuest($event, $pseudo), $item, -1);
+        }
+        self::assertSame(QueueItemStatus::Rejected, $item->getStatus());
+
+        $this->expectExceptionObject(DomainException::trackRejected());
+        $this->queue->propose($this->createGuest($event, 'Yanis'), 't1');
+    }
+
     public function testALockedTrackCannotBeVotedOn(): void
     {
         $this->fakeCatalog(['t1' => $this->track('t1')]);

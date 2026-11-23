@@ -2,7 +2,7 @@ export type EventStatus = 'draft' | 'live' | 'paused' | 'ended'
 
 export type QueueItemStatus = 'pending' | 'locked' | 'playing' | 'played' | 'removed' | 'rejected'
 
-export type SearchState = 'available' | 'queued' | 'replayed' | 'explicit' | 'too_long' | 'quota'
+export type SearchState = 'available' | 'queued' | 'rejected' | 'replayed' | 'explicit' | 'too_long' | 'quota'
 
 export interface TrackView {
   spotifyId: string

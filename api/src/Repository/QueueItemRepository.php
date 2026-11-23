@@ -67,6 +67,22 @@ class QueueItemRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /** @return list<string> Spotify ids pushed out of the queue, which cannot be proposed again during the event */
+    public function rejectedTrackIds(Event $event): array
+    {
+        /** @var list<array{spotifyId: string}> $rows */
+        $rows = $this->createQueryBuilder('q')
+            ->select('DISTINCT q.track.spotifyId AS spotifyId')
+            ->andWhere('q.event = :event')
+            ->andWhere('q.status = :status')
+            ->setParameter('event', $event->getId(), UuidType::NAME)
+            ->setParameter('status', QueueItemStatus::Rejected)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($rows, 'spotifyId');
+    }
+
     public function findLastPlay(Event $event, string $spotifyId): ?QueueItem
     {
         return $this->createQueryBuilder('q')

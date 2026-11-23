@@ -46,6 +46,10 @@ class QueueManager
             return ['item' => $existing, 'alreadyQueued' => true, 'snapshot' => $this->broadcast($event)];
         }
 
+        if (\in_array($spotifyId, $this->items->rejectedTrackIds($event), true)) {
+            throw DomainException::trackRejected();
+        }
+
         if ($settings->replayDelayMinutes > 0) {
             $lastPlay = $this->items->findLastPlay($event, $spotifyId);
             $playedAt = $lastPlay?->getPlayedAt();
@@ -171,6 +175,7 @@ class QueueManager
         }
 
         $vote = $this->votes->findOneFor($item, $guest);
+
         if (0 === $value) {
             if (null !== $vote) {
                 $item->getVotes()->removeElement($vote);

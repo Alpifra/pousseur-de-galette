@@ -41,6 +41,7 @@ class SearchController
         $settings = $event->getSettings();
         $queued = $this->items->upcomingTrackMap($event);
         $replayed = $this->items->recentlyPlayedTrackIds($event, $settings->replayDelayMinutes);
+        $rejected = $this->items->rejectedTrackIds($event);
         $pending = $this->pending($guest);
 
         $results = [];
@@ -51,6 +52,9 @@ class SearchController
             if (isset($queued[$track->spotifyId])) {
                 $state = 'queued';
                 $label = 'Dans la file';
+            } elseif (\in_array($track->spotifyId, $rejected, true)) {
+                $state = 'rejected';
+                $label = 'Écarté ce soir';
             } elseif (\in_array($track->spotifyId, $replayed, true)) {
                 $state = 'replayed';
                 $label = 'Déjà passé';

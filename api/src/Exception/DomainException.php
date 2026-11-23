@@ -74,6 +74,11 @@ class DomainException extends \RuntimeException
         return new self('downvotes_disabled', 'Les votes négatifs sont désactivés sur cette soirée.', 403);
     }
 
+    public static function trackRejected(): self
+    {
+        return new self('track_rejected', 'Ce titre a été écarté de la file, il ne peut plus être proposé ce soir.', 409);
+    }
+
     public static function ownProposal(): self
     {
         return new self('own_proposal', 'Tu ne peux pas voter pour ta propre galette, mais tu peux la retirer.', 403);

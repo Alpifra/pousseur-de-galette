@@ -119,6 +119,7 @@ Lors d'un mariage, d'un anniversaire ou d'une soirée privée, la musique est so
 
 ### 6.3 Propositions
 - Un titre déjà présent dans la file ne peut pas être reproposé : la tentative devient un upvote.
+- Un titre retiré par le seuil de rejet ne peut plus être proposé de la soirée.
 - Un titre joué depuis moins de X minutes (paramétrable) ne peut pas être reproposé.
 - Nombre maximal de propositions **en attente** par convive (paramétrable, ex. 5) pour éviter qu'une seule personne monopolise la file.
 - Filtres optionnels : contenus explicites, durée maximale d'un titre.
